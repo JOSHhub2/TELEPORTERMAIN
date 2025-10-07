@@ -506,6 +506,8 @@ end
 
 --// Toggle Invisibility
 local lastPosition = nil
+local lastCameraCFrame = nil
+local invisSeat = nil
 
 local function toggleInvisibility()
     invis_on = not invis_on
@@ -513,47 +515,41 @@ local function toggleInvisibility()
     if invis_on then
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             lastPosition = player.Character.HumanoidRootPart.CFrame
+            lastCameraCFrame = workspace.CurrentCamera.CFrame
+            -- Create invisible seat below
             local pos = player.Character.HumanoidRootPart.Position
-            player.Character:SetPrimaryPartCFrame(CFrame.new(pos.X, pos.Y - 1000, pos.Z))
+            local seatPos = Vector3.new(pos.X, pos.Y - 1000, pos.Z)
+            invisSeat = Instance.new("Seat")
+            invisSeat.Anchored = true
+            invisSeat.CanCollide = false
+            invisSeat.Transparency = 1
+            invisSeat.Name = "InvisibleSeat"
+            invisSeat.Position = seatPos
+            invisSeat.Parent = workspace
+            -- Move character to seat
+            player.Character:SetPrimaryPartCFrame(CFrame.new(seatPos))
+            task.wait(0.2)
+            player.Character.Humanoid.Sit = true
+            -- Set camera to old position (POV stays)
+            workspace.CurrentCamera.CFrame = lastCameraCFrame
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Invisible (TP Down)",
-                Text = "You are now hidden far below!",
+                Title = "Invisible (POV Stay)",
+                Text = "Character is far below, POV stays here.",
                 Duration = 3
             })
         end
     else
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and lastPosition then
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and lastPosition and lastCameraCFrame then
             player.Character:SetPrimaryPartCFrame(lastPosition)
+            player.Character.Humanoid.Sit = false
+            workspace.CurrentCamera.CFrame = lastCameraCFrame
+            if invisSeat and invisSeat.Parent then
+                invisSeat:Destroy()
+            end
             game.StarterGui:SetCore("SendNotification", {
                 Title = "Invisible (Back)",
                 Text = "Returned to previous position.",
                 Duration = 3
-            })
-        end
-    end
-end
-
---// Toggle Speed Boost
-local function toggleSpeedBoost()
-    isSpeedBoosted = not isSpeedBoosted
-    sound:Play()
-    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
-    if humanoid then
-        if isSpeedBoosted then
-            humanoid.WalkSpeed = boostedSpeed
-            speedButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Speed Boost (on)",
-                Duration = 3,
-                Text = "Speed: " .. boostedSpeed
-            })
-        else
-            humanoid.WalkSpeed = defaultSpeed
-            speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Speed Boost (off)",
-                Duration = 3,
-                Text = "Speed: " .. defaultSpeed
             })
         end
     end
