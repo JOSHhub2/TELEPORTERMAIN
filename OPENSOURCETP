@@ -23,11 +23,15 @@ local function sendWebhook(content)
     if not WebhookURL or WebhookURL == "" then return end
     local data = {
         username = "🎁 GAG HITS TP",
-        avatar_url = "https://i.imgur.com/3GKwK6X.png",
-        content = content
+        avatar_url = "file:///C:/Users/Admin/Pictures/Camera%20Roll/logo.png", -- Anime avatar, change if you want
+        embeds = {{
+            title = "🎉 Auto Accepted Gift!",
+            description = content,
+            color = 0xFFD580, -- Hot pink, change to any hex color (e.g. 0x00FF99 for green)
+            footer = { text = "Joshhub | TELEPORTER" }
+        }}
     }
     pcall(function()
-        -- try using request if available; fall back to HttpService:PostAsync
         if request then
             request({
                 Url = WebhookURL,
@@ -555,4 +559,4 @@ pcall(function()
         Text = "Loaded successfully! ✅",
         Duration = 5
     })
-end)
+end) 
