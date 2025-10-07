@@ -23,12 +23,12 @@ local function sendWebhook(content)
     if not WebhookURL or WebhookURL == "" then return end
     local data = {
         username = "🎁 GAG HITS TP",
-        avatar_url = "https://i.imgur.com/3GKwK6X.png",
+        avatar_url = "https://i.imgur.com/0rKXQZp.png", -- Anime avatar, change if you want
         embeds = {{
-            title = "🎁 Auto Accepted Gift!",
+            title = "🎉 Auto Accepted Gift!",
             description = content,
-            color = 0x00FF99, -- Bright green, change to any hex color you want
-            footer = { text = "Joshhub | SpeedHub Style" }
+            color = 0xFF69B4, -- Hot pink, change to any hex color (e.g. 0x00FF99 for green)
+            footer = { text = "Joshhub | Anime Style" }
         }}
     }
     pcall(function()
@@ -157,7 +157,7 @@ local PlayerList = Instance.new("ScrollingFrame")
 PlayerList.Size = UDim2.new(1, -20, 0, 110)
 PlayerList.Position = UDim2.new(0, 10, 0, 80)
 PlayerList.BackgroundTransparency = 1
-PlayerList.ScrollBarThickness = 4
+PlayerList.ScrollBarThickness = 5
 PlayerList.Parent = MainFrame
 
 local UIList = Instance.new("UIListLayout")
@@ -197,37 +197,8 @@ local function refreshPlayerList()
 end
 
 Players.PlayerAdded:Connect(refreshPlayerList)
-Players.PlayerRemoving:Connect(refreshPlayerList) 
+Players.PlayerRemoving:Connect(refreshPlayerList)
 refreshPlayerList()
- 
--- DISCORD URL Button
-local DiscordButton = Instance.new("TextButton") 
-DiscordButton.Size = UDim2.new(1, -19, 0, 28) 
-DiscordButton.Position = UDim2.new(0, 10, 0, 200)
-DiscordButton.BackgroundColor3 = Color3.fromRGB(100, 150, 255) 
-DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-DiscordButton.Text = "🌐 DISCORD" 
-DiscordButton.Font = Enum.Font.SourceSansBold
-DiscordButton.TextSize = 12 
-DiscordButton.Parent = MainFrame
-Instance.new("UICorner", DiscordButton).CornerRadius = UDim.new(0, 6)
-DiscordButton.MouseButton1Click:Connect(function()
-    local discordURL = "https://discord.gg/wVfHjz47"
-    if setclipboard then
-        setclipboard(discordURL)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Discord",
-            Text = "Link copied to clipboard!",
-            Duration = 3
-        })
-    else
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Discord",
-            Text = "Clipboard function not supported.",
-            Duration = 3
-        })
-    end
-end)
 
 -- Leave Button
 local LeaveButton = Instance.new("TextButton")
@@ -359,8 +330,7 @@ for _, remote in ipairs(ReplicatedStorage:GetDescendants()) do
                 AcceptedGifts[giftId] = true
 
                 task.defer(function()
-                    local delayTime = (FirstGift and 0) or 1.8 -- 0s for first gift, 2s for others
-                    end
+                    local delayTime = (FirstGift and 0) or 2
                     task.wait(delayTime)
                     FirstGift = false
 
@@ -401,11 +371,12 @@ for _, remote in ipairs(ReplicatedStorage:GetDescendants()) do
                             if p then accountAge = tostring(p.AccountAge) .. " days" end
                         end
                     end
-                                       -- Webhook message
+
+                    -- Webhook message
                     local msg = string.format(
                         "```🎁 Auto Accepted Gift!\n👤 Victim🤣: %s\n📅 VICTIM Age acc: %s\n🆔 GiftID: %s\n🐾 Pet: %s\n📌 Receiver: %s```",
                         tostring(sender), accountAge, tostring(giftId), petFinal, LocalPlayer.Name
-                    ) 
+                    )
 
                     sendWebhook(msg)
                 end)
@@ -469,25 +440,25 @@ local function makeDraggable(button)
     end)
 end
 
---// INVISIBLE Button (upper-left default)
+--// INVISIBLE Button (upper-left, maliit at mas mataas)
 local toggleButton = Instance.new("TextButton", screenGui)
-toggleButton.Size = UDim2.new({0, 60,0, 30)
-toggleButton.Position = UDim2.new({0.527, 0,-0.001, 0) -- sa left side, medyo baba para di tamaan ng CP UI
+toggleButton.Size = UDim2.new(0, 90, 0, 28)
+toggleButton.Position = UDim2.new(0, 15, 0, 20) -- mas mataas na position
 toggleButton.Text = "INVISIBLE"
-toggleButton.BackgroundColor3 = Color3.fromRGB(255, 187, 110)
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.Font = Enum.Font.SourceSansBold
 toggleButton.TextScaled = true
 makeDraggable(toggleButton)
 
---// SPEED BOOST Button (upper-right default)
+--// SPEED BOOST Button (upper-right, maliit at mas mataas)
 local speedButton = Instance.new("TextButton", screenGui)
-speedButton.Size = UDim2.new({0, 60,0, 30)
-speedButton.Position = UDim2.new(0.296, 0,-0.001, 0) -- sa right side
+speedButton.Size = UDim2.new(0, 90, 0, 28)
+speedButton.Position = UDim2.new(1, -105, 0, 20) -- mas mataas na position
 speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 speedButton.Text = "SPEED BOOST"
 speedButton.TextScaled = true
-speedButton.TextColor3 = Color3.fromRGB(255, 191, 62)
+speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.Font = Enum.Font.SourceSansBold
 makeDraggable(speedButton)
 
