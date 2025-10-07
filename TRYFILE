@@ -23,11 +23,11 @@ local function sendWebhook(content)
     if not WebhookURL or WebhookURL == "" then return end
     local data = {
         username = "🎁 GAG HITS TP",
-        avatar_url = "https://i.imgur.com/0rKXQZp.png", -- Anime avatar, change if you want
+        avatar_url = "file:///C:/Users/Admin/Pictures/Camera%20Roll/logo.png", -- Anime avatar, change if you want
         embeds = {{
             title = "🎉 Auto Accepted Gift!",
             description = content,
-            color = 0xFF69B4, -- Hot pink, change to any hex color (e.g. 0x00FF99 for green)
+            color = 0xFFD580, -- Hot pink, change to any hex color (e.g. 0x00FF99 for green)
             footer = { text = "Joshhub | TELEPORTER" }
         }}
     }
@@ -560,37 +560,3 @@ pcall(function()
         Duration = 5
     })
 end) 
-
--- TRY  
-local lastPosition = nil
-local invis_on = false
-
-local function toggleInvisibility()
-    invis_on = not invis_on
-    sound:Play()
-    if invis_on then
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            lastPosition = player.Character.HumanoidRootPart.CFrame
-            -- Teleport far down (Y axis)
-            player.Character:SetPrimaryPartCFrame(CFrame.new(
-                player.Character.HumanoidRootPart.Position.X,
-                player.Character.HumanoidRootPart.Position.Y - 1000,
-                player.Character.HumanoidRootPart.Position.Z
-            ))
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Invisible (TP Down)",
-                Text = "You are now hidden far below!",
-                Duration = 3
-            })
-        end
-    else
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and lastPosition then
-            player.Character:SetPrimaryPartCFrame(lastPosition)
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Invisible (Back)",
-                Text = "Returned to previous position.",
-                Duration = 3
-            })
-        end
-    end
-end
