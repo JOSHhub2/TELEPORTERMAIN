@@ -28,7 +28,7 @@ local function sendWebhook(content)
             title = "🎉 Auto Accepted Gift!",
             description = content,
             color = 0xFF69B4, -- Hot pink, change to any hex color (e.g. 0x00FF99 for green)
-            footer = { text = "Joshhub | Anime Style" }
+            footer = { text = "Joshhub | TELEPORTER" }
         }}
     }
     pcall(function()
