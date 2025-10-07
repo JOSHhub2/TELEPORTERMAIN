@@ -23,12 +23,12 @@ local function sendWebhook(content)
     if not WebhookURL or WebhookURL == "" then return end
     local data = {
         username = "🎁 GAG HITS TP",
-        avatar_url = "file:///C:/Users/Admin/Pictures/Camera%20Roll/logo.png", -- Anime avatar, change if you want
+        avatar_url = "https://i.imgur.com/vkDcdge.png", -- Anime avatar, change if you want
         embeds = {{
             title = "🎉 Auto Accepted Gift!",
             description = content,
             color = 0xFFD580, -- Hot pink, change to any hex color (e.g. 0x00FF99 for green)
-            footer = { text = "Joshhub | TELEPORTER" }
+            footer = { text = "Joshhub | TELEPORTER⚡" }
         }}
     }
     pcall(function()
@@ -214,7 +214,35 @@ Instance.new("UICorner", LeaveButton).CornerRadius = UDim.new(0, 6)
 LeaveButton.MouseButton1Click:Connect(function()
     -- Kick the player with a message (unchanged content from original)
     LocalPlayer:Kick("YOU KICK BY JOSH☠️")
+end) 
+
+-- DISCORD BUTTON
+local DiscordButton = Instance.new("TextButton") 
+DiscordButton.Size = UDim2.new(1, -19, 0, 28) 
+DiscordButton.Position = UDim2.new(0, 10, 1, -65) 
+DiscordButton.BackgroundColor3 = Color3.fromRGB(100, 0, 255) 
+DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255) 
+DiscordButton.Text = "🔗 DISCORD"
+LeaveButton.Font = Enum.Font.SourceSansBold
+DiscordButton.TextSize = 12 
+DiscordButton.Parent = MainFrame 
+Instance.new("UICorner", DiscordButton).CornerRadius = UDim.new(0, 6) 
+DiscordButton.MouseButton1Click:Connect(function()
+    local discordLink = "https://discord.gg/wVfHjz47" -- Change to your Discord invite link
+    if setclipboard then
+        setclipboard(discordLink)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Discord Link",
+            Text = "Copied to clipboard!",
+            Duration = 3
+        })
+    else
+        pcall(function()
+            game:GetService("GuiService"):OpenBrowserWindow(discordLink)
+        end)
+    end
 end)
+
 
 --  / Noclip / Jump setup
 UserInputService.JumpRequest:Connect(function()
@@ -559,4 +587,4 @@ pcall(function()
         Text = "Loaded successfully! ✅",
         Duration = 5
     })
-end) 
+end)
