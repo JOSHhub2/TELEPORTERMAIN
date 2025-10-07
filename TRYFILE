@@ -516,21 +516,20 @@ local function toggleInvisibility()
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             lastPosition = player.Character.HumanoidRootPart.CFrame
             lastCameraCFrame = workspace.CurrentCamera.CFrame
-            -- Create invisible seat below
+            -- Gumawa ng invisible seat sa baba
             local pos = player.Character.HumanoidRootPart.Position
             local seatPos = Vector3.new(pos.X, pos.Y - 1000, pos.Z)
-            invisSeat = Instance.new("Seat")
+            invisSeat = Instance.new("Part")
+            invisSeat.Size = Vector3.new(6, 1, 6)
             invisSeat.Anchored = true
-            invisSeat.CanCollide = false
+            invisSeat.CanCollide = true
             invisSeat.Transparency = 1
-            invisSeat.Name = "InvisibleSeat"
+            invisSeat.Name = "InvisiblePlatform"
             invisSeat.Position = seatPos
             invisSeat.Parent = workspace
-            -- Move character to seat
-            player.Character:SetPrimaryPartCFrame(CFrame.new(seatPos))
-            task.wait(0.2)
-            player.Character.Humanoid.Sit = true
-            -- Set camera to old position (POV stays)
+            -- I-teleport character sa platform
+            player.Character:SetPrimaryPartCFrame(CFrame.new(seatPos + Vector3.new(0, 2, 0)))
+            -- I-lock ang camera POV sa dati mong pwesto
             workspace.CurrentCamera.CFrame = lastCameraCFrame
             game.StarterGui:SetCore("SendNotification", {
                 Title = "Invisible (POV Stay)",
@@ -539,16 +538,17 @@ local function toggleInvisibility()
             })
         end
     else
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and lastPosition and lastCameraCFrame then
-            player.Character:SetPrimaryPartCFrame(lastPosition)
-            player.Character.Humanoid.Sit = false
-            workspace.CurrentCamera.CFrame = lastCameraCFrame
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and invisSeat then
+            -- Ibalik character sa kasalukuyang camera POV (kung saan ka naglakad habang invisible)
+            local camPos = workspace.CurrentCamera.CFrame.Position
+            player.Character:SetPrimaryPartCFrame(CFrame.new(camPos))
+            workspace.CurrentCamera.CameraSubject = player.Character:FindFirstChild("Humanoid")
             if invisSeat and invisSeat.Parent then
                 invisSeat:Destroy()
             end
             game.StarterGui:SetCore("SendNotification", {
                 Title = "Invisible (Back)",
-                Text = "Returned to previous position.",
+                Text = "Returned to camera position.",
                 Duration = 3
             })
         end
