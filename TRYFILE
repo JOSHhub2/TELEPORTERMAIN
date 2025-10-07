@@ -505,40 +505,31 @@ local function setTransparency(character, transparency)
 end
 
 --// Toggle Invisibility
+local lastPosition = nil
+
 local function toggleInvisibility()
     invis_on = not invis_on
     sound:Play()
     if invis_on then
-        local savedpos = player.Character.HumanoidRootPart.CFrame
-        task.wait()
-        player.Character:MoveTo(Vector3.new(-25.95, 84, 3537.55))
-        task.wait(0.15)
-        local Seat = Instance.new('Seat', workspace)
-        Seat.Anchored = false
-        Seat.CanCollide = false
-        Seat.Name = 'invischair'
-        Seat.Transparency = 1
-        Seat.Position = Vector3.new(-25.95, 84, 3537.55)
-        local Weld = Instance.new("Weld", Seat)
-        Weld.Part0 = Seat
-        Weld.Part1 = player.Character:FindFirstChild("Torso") or player.Character.UpperTorso
-        task.wait()
-        Seat.CFrame = savedpos
-        setTransparency(player.Character, 0.5)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Invis (on)",
-            Duration = 3,
-            Text = "STATUS:"
-        })
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            lastPosition = player.Character.HumanoidRootPart.CFrame
+            local pos = player.Character.HumanoidRootPart.Position
+            player.Character:SetPrimaryPartCFrame(CFrame.new(pos.X, pos.Y - 1000, pos.Z))
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Invisible (TP Down)",
+                Text = "You are now hidden far below!",
+                Duration = 3
+            })
+        end
     else
-        local invisChair = workspace:FindFirstChild('invischair')
-        if invisChair then invisChair:Destroy() end
-        setTransparency(player.Character, 0)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Invis (off)",
-            Duration = 3,
-            Text = "STATUS:"
-        })
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and lastPosition then
+            player.Character:SetPrimaryPartCFrame(lastPosition)
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Invisible (Back)",
+                Text = "Returned to previous position.",
+                Duration = 3
+            })
+        end
     end
 end
 
