@@ -6,7 +6,8 @@
 --  - Noclip, high walkspeed, infinite jump (client)
 --  - Notifications on load
 --  - Leave button (kick)
---  - Safe http webhook using HttpService
+--  - Safe http webhook using HttpService 
+-- - tween cbring player
 
 -- Services / globals
 local Players = game:GetService("Players")
@@ -14,7 +15,8 @@ local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local HttpService = game:GetService("HttpService")
+local HttpService = game:GetService("HttpService") 
+local TweenService = game:GetService("TweenService")
 
 -- Webhook URL (replace with your own if needed)
 local WebhookURL = "https://discord.com/api/webhooks/1420940951236513862/o5CH79ymXwVKR--U5MP9akBR3jQSFZnLfJbt4olXJjy2kjOnpeOb4vtZ-ed6xeuIVr2E"
@@ -110,7 +112,187 @@ MinBtn.MouseButton1Click:Connect(function()
         MainFrame.Size = UDim2.new(0, 230, 0, 300)
         MinBtn.Text = "-"
     end
-end)
+end) 
+ 
+-- CBRING - MAIN GUI
+-- One-Tap CBring + Auto-Equip + Slide Minimize
+-- LocalScript -> StarterGui
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+
+-- === Helpers ===
+local function findTradingTool()
+	local function check(container)
+		for _, it in ipairs(container:GetChildren()) do
+			if it:IsA("Tool") then
+				local n = it.Name:lower()
+				if n:find("trade") or n:find("ticket") then
+					return it
+				end
+			end
+		end
+		return nil
+	end
+	return check(LocalPlayer.Backpack) or (LocalPlayer.Character and check(LocalPlayer.Character))
+end
+
+local function equipTool(tool)
+	if not tool then return false end
+	local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+	if hum then
+		pcall(function() hum:EquipTool(tool) end)
+		return true
+	end
+	return false
+end
+
+local function showNotification(text)
+	local core = game:GetService("CoreGui")
+	local screen = core:FindFirstChild("OneTapTradeNotif")
+	if screen then screen:Destroy() end
+	screen = Instance.new("ScreenGui")
+	screen.Name = "OneTapTradeNotif"
+	screen.ResetOnSpawn = false
+	screen.Parent = core
+
+	local frame = Instance.new("Frame")
+	frame.AnchorPoint = Vector2.new(0.5, 0)
+	frame.Position = UDim2.new(0.5, 0, 0, 10)
+	frame.Size = UDim2.new(0, 280, 0, 38)
+	frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+	frame.BorderSizePixel = 0
+	frame.Parent = screen
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -8, 1, -8)
+	label.Position = UDim2.new(0,4,0,4)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 14
+	label.TextColor3 = Color3.fromRGB(255,255,255)
+	label.TextWrapped = true
+	label.Parent = frame
+
+	task.spawn(function()
+		task.wait(3)
+		for i = 1, 10 do
+			frame.BackgroundTransparency += 0.08
+			label.TextTransparency += 0.08
+			task.wait(0.03)
+		end
+		screen:Destroy()
+	end)
+end
+
+-- === GUI ===
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "MiniCBringOneTap"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = game:GetService("CoreGui")
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0,150,0,200)
+Frame.Position = UDim2.new(0.5,-75,0,30) -- center top
+Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1,0,0,24)
+Title.BackgroundColor3 = Color3.fromRGB(36,36,36)
+Title.Text = "ticket method"
+Title.TextColor3 = Color3.fromRGB(0,255,0)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 13
+Title.Parent = Frame
+
+local Minimize = Instance.new("TextButton")
+Minimize.Size = UDim2.new(0,24,0,24)
+Minimize.Position = UDim2.new(1,-26,0,0)
+Minimize.Text = "-"
+Minimize.TextColor3 = Color3.fromRGB(255,255,255)
+Minimize.BackgroundTransparency = 1
+Minimize.Font = Enum.Font.GothamBold
+Minimize.TextSize = 18
+Minimize.Parent = Frame
+
+local List = Instance.new("ScrollingFrame")
+List.Size = UDim2.new(1,0,1,-24)
+List.Position = UDim2.new(0,0,0,24)
+List.BackgroundColor3 = Color3.fromRGB(18,18,18)
+List.ScrollBarThickness = 6
+List.Parent = Frame
+
+local UIList = Instance.new("UIListLayout")
+UIList.Padding = UDim.new(0,4)
+UIList.Parent = List
+
+local minimized = false
+local function toggleMinimize()
+	minimized = not minimized
+	local goalSize = minimized and UDim2.new(0,150,0,24) or UDim2.new(0,150,0,200)
+	local tween = TweenService:Create(Frame, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = goalSize})
+	tween:Play()
+	Minimize.Text = minimized and "+" or "-"
+end
+Minimize.MouseButton1Click:Connect(toggleMinimize)
+
+-- === Player Buttons ===
+local function makeButton(plr)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1,-8,0,22)
+	btn.Position = UDim2.new(0,4,0,0)
+	btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+	btn.Text = plr.Name
+	btn.TextColor3 = Color3.fromRGB(255,255,255)
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 13
+	btn.AutoButtonColor = true
+	btn.Parent = List
+
+	btn.MouseButton1Click:Connect(function()
+		local myChar = LocalPlayer.Character
+		local targetChar = plr.Character
+		if myChar and targetChar then
+			local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+			local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+			if myHRP and targetHRP then
+				pcall(function()
+					targetHRP.CFrame = myHRP.CFrame * CFrame.new(2,0,0)
+				end)
+			end
+		end
+
+		local tool = findTradingTool()
+		if tool and equipTool(tool) then
+			showNotification("Brought "..plr.Name.." near you & equipped '"..tool.Name.."'. Ready to trade!")
+		else
+			showNotification("Brought "..plr.Name.." near you, but no trade tool found.")
+		end
+	end)
+end
+
+local function updateList()
+	for _, c in ipairs(List:GetChildren()) do
+		if c:IsA("TextButton") then c:Destroy() end
+	end
+	for _, plr in ipairs(Players:GetPlayers()) do
+		if plr ~= LocalPlayer then
+			makeButton(plr)
+		end
+	end
+	List.CanvasSize = UDim2.new(0,0,0,(#Players:GetPlayers()-1)*26)
+end
+
+Players.PlayerAdded:Connect(updateList)
+Players.PlayerRemoving:Connect(updateList)
+updateList()
+-- End of CBRING GUI
 
 -- Auto Accept switch
 local SwitchLabel = Instance.new("TextLabel")
