@@ -505,51 +505,64 @@ local function setTransparency(character, transparency)
 end
 
 --// Toggle Invisibility
-local lastPosition = nil
-local lastCameraCFrame = nil
-local invisSeat = nil
-
 local function toggleInvisibility()
     invis_on = not invis_on
     sound:Play()
     if invis_on then
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            lastPosition = player.Character.HumanoidRootPart.CFrame
-            lastCameraCFrame = workspace.CurrentCamera.CFrame
-            -- Gumawa ng invisible seat sa baba
-            local pos = player.Character.HumanoidRootPart.Position
-            local seatPos = Vector3.new(pos.X, pos.Y - 1000, pos.Z)
-            invisSeat = Instance.new("Part")
-            invisSeat.Size = Vector3.new(6, 1, 6)
-            invisSeat.Anchored = true
-            invisSeat.CanCollide = true
-            invisSeat.Transparency = 1
-            invisSeat.Name = "InvisiblePlatform"
-            invisSeat.Position = seatPos
-            invisSeat.Parent = workspace
-            -- I-teleport character sa platform
-            player.Character:SetPrimaryPartCFrame(CFrame.new(seatPos + Vector3.new(0, 2, 0)))
-            -- I-lock ang camera POV sa dati mong pwesto
-            workspace.CurrentCamera.CFrame = lastCameraCFrame
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Invisible (POV Stay)",
-                Text = "Character is far below, POV stays here.",
-                Duration = 3
-            })
-        end
+        local savedpos = player.Character.HumanoidRootPart.CFrame
+        task.wait()
+        player.Character:MoveTo(Vector3.new(-25.95, 84, 3537.55))
+        task.wait(0.15)
+        local Seat = Instance.new('Seat', workspace)
+        Seat.Anchored = false
+        Seat.CanCollide = false
+        Seat.Name = 'invischair'
+        Seat.Transparency = 1
+        Seat.Position = Vector3.new(-25.95, 84, 3537.55)
+        local Weld = Instance.new("Weld", Seat)
+        Weld.Part0 = Seat
+        Weld.Part1 = player.Character:FindFirstChild("Torso") or player.Character.UpperTorso
+        task.wait()
+        Seat.CFrame = savedpos
+        setTransparency(player.Character, 0.5)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Invis (on)",
+            Duration = 3,
+            Text = "STATUS:"
+        })
     else
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and invisSeat then
-            -- Ibalik character sa kasalukuyang camera POV (kung saan ka naglakad habang invisible)
-            local camPos = workspace.CurrentCamera.CFrame.Position
-            player.Character:SetPrimaryPartCFrame(CFrame.new(camPos))
-            workspace.CurrentCamera.CameraSubject = player.Character:FindFirstChild("Humanoid")
-            if invisSeat and invisSeat.Parent then
-                invisSeat:Destroy()
-            end
+        local invisChair = workspace:FindFirstChild('invischair')
+        if invisChair then invisChair:Destroy() end
+        setTransparency(player.Character, 0)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Invis (off)",
+            Duration = 3,
+            Text = "STATUS:"
+        })
+    end
+end
+
+--// Toggle Speed Boost
+local function toggleSpeedBoost()
+    isSpeedBoosted = not isSpeedBoosted
+    sound:Play()
+    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+    if humanoid then
+        if isSpeedBoosted then
+            humanoid.WalkSpeed = boostedSpeed
+            speedButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Invisible (Back)",
-                Text = "Returned to camera position.",
-                Duration = 3
+                Title = "Speed Boost (on)",
+                Duration = 3,
+                Text = "Speed: " .. boostedSpeed
+            })
+        else
+            humanoid.WalkSpeed = defaultSpeed
+            speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Speed Boost (off)",
+                Duration = 3,
+                Text = "Speed: " .. defaultSpeed
             })
         end
     end
@@ -574,4 +587,4 @@ pcall(function()
         Text = "Loaded successfully! ✅",
         Duration = 5
     })
-end) 
+end)
