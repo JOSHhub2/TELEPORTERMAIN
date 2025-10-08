@@ -1,1 +1,154 @@
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local UIGridLayout = Instance.new("UIGridLayout")
+local close = Instance.new("TextButton")
 
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(183, 101, 255)
+Frame.Position = UDim2.new(0.369825214, 0, 0.423832893, 0)
+Frame.Size = UDim2.new(0, 400, 0, 250)
+Frame.Active = true
+Frame.Draggable = true
+
+Title.Parent = Frame
+Title.BackgroundColor3 = Color3.fromRGB(125, 102, 255)
+Title.Position = UDim2.new(0.01, 0, 0.00832893, 0)
+Title.Size = UDim2.new(0, 303, 0, 35)
+Title.Font = Enum.Font.Cartoon
+Title.Text = "Josh Hub"
+Title.TextColor3 = Color3.fromRGB(0, 0, 0)
+Title.TextSize = 40.000
+
+close.Parent = Frame
+close.BackgroundColor3 = Color3.fromRGB(125, 102, 255)
+close.Position = UDim2.new(0.879518092, 0, 0.00832893, 0)
+close.Size = UDim2.new(0, 40, 0, 35)
+close.Font = Enum.Font.GothamBlack
+close.Text = "X"
+close.TextColor3 = Color3.new(0, 0, 0)
+close.TextScaled = true
+close.TextSize = 14
+close.TextWrapped = true
+close.MouseButton1Down:Connect(function()
+    Frame.Visible = false
+end)
+
+ScrollingFrame.Parent = Frame
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.Position = UDim2.new(0.01, 0, 0.2, 0)
+ScrollingFrame.Size = UDim2.new(0, 340, 0, 200)
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollingFrame.ScrollBarThickness = 6
+
+UIGridLayout.Parent = ScrollingFrame
+UIGridLayout.CellSize = UDim2.new(0, 94, 0, 35) 
+UIGridLayout.CellPadding = UDim2.new(0, 5, 0, 10)
+
+local function AddButton(parent, config)
+    local Button = Instance.new("TextButton")
+    Button.Parent = parent
+    Button.BackgroundColor3 = Color3.fromRGB(125, 102, 255)
+    Button.Size = UDim2.new(0, 94, 0, 35)
+    Button.Font = Enum.Font.Cartoon
+    Button.Text = config.Name or "Button"
+    Button.TextColor3 = Color3.fromRGB(0, 0, 0)
+    Button.TextSize = 20.000
+    Button.MouseButton1Click:Connect(config.Callback or function() end)
+
+    parent.CanvasSize = UDim2.new(0, 0, 0, UIGridLayout.AbsoluteContentSize.Y + 10)
+end
+
+-- All Buttons in English
+AddButton(ScrollingFrame, { Name = "Fly", Callback = function() loadstring("\108\111\97\100...")() end })
+AddButton(ScrollingFrame, { Name = "Invisible", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Invisible%20Gui'))() end })
+AddButton(ScrollingFrame, { Name = "Dance", Callback = function() loadstring(game:HttpGet("https://yarhm.mhi.im/scr?channel=afem"))() end })
+AddButton(ScrollingFrame, { Name = "Admin", Callback = function()
+    defaultsettings = { prefix = ';'; StayOpen = false; keepIY = true; logsEnabled = false; jLogsEnabled = false; aliases = {}; binds = {}; WayPoints = {}; PluginsTable = {}; }
+    defaults = game:GetService("HttpService"):JSONEncode(defaultsettings)
+    writefile("IY_FE.iy",defaults)
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end })
+AddButton(ScrollingFrame, { Name = "Animations", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/GamingScripter/Animation-Hub/main/Animation%20Gui", true))() end })
+AddButton(ScrollingFrame, { Name = "Aimbot", Callback = function()
+    _G.HeadSize = 30 _G.Disabled = true  
+    game:GetService('RunService').RenderStepped:connect(function() 
+        if _G.Disabled then 
+            for i,v in next, game:GetService('Players'):GetPlayers() do 
+                if v.Name ~= game:GetService('Players').LocalPlayer.Name then 
+                    pcall(function() 
+                        v.Character.HumanoidRootPart.Size = Vector3.new(_G.HeadSize,_G.HeadSize,_G.HeadSize) 
+                        v.Character.HumanoidRootPart.Transparency = 0.7 
+                        v.Character.HumanoidRootPart.BrickColor = BrickColor.new("Really black") 
+                        v.Character.HumanoidRootPart.Material = "Neon" 
+                        v.Character.HumanoidRootPart.CanCollide = false 
+                    end) 
+                end 
+            end 
+        end 
+    end)
+end })
+AddButton(ScrollingFrame, { Name = "Hitbox", Callback = function()
+    _G.HeadSize = 10 _G.Disabled = true  
+    game:GetService('RunService').RenderStepped:connect(function() 
+        if _G.Disabled then 
+            for i,v in next, game:GetService('Players'):GetPlayers() do 
+                if v.Name ~= game:GetService('Players').LocalPlayer.Name then 
+                    pcall(function() 
+                        v.Character.HumanoidRootPart.Size = Vector3.new(_G.HeadSize,_G.HeadSize,_G.HeadSize) 
+                        v.Character.HumanoidRootPart.Transparency = 0.7 
+                        v.Character.HumanoidRootPart.BrickColor = BrickColor.new("Really blue") 
+                        v.Character.HumanoidRootPart.Material = "Neon" 
+                        v.Character.HumanoidRootPart.CanCollide = false 
+                    end) 
+                end 
+            end 
+        end 
+    end)
+end })
+AddButton(ScrollingFrame, { Name = "Speed", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/R7KScript/Arabic-speed/refs/heads/main/Arabic.speed.txt"))() end })
+AddButton(ScrollingFrame, { Name = "Animations 2", Callback = function() loadstring(game:HttpGet("https://yarhm.mhi.im/scr?channel=afem"))() end })
+AddButton(ScrollingFrame, { Name = "ESP", Callback = function()
+    local FillColor = Color3.fromRGB(175,25,255)
+    local DepthMode = "AlwaysOnTop"
+    local FillTransparency = 0.5
+    local OutlineColor = Color3.fromRGB(255,255,255)
+    local OutlineTransparency = 0
+    local CoreGui = game:FindService("CoreGui")
+    local Players = game:FindService("Players")
+    local connections = {}
+    local Storage = Instance.new("Folder")
+    Storage.Parent = CoreGui
+    Storage.Name = "Highlight_Storage"
+    local function Highlight(plr)
+        local Highlight = Instance.new("Highlight")
+        Highlight.Name = plr.Name
+        Highlight.FillColor = FillColor
+        Highlight.DepthMode = DepthMode
+        Highlight.FillTransparency = FillTransparency
+        Highlight.OutlineColor = OutlineColor
+        Highlight.OutlineTransparency = 0
+        Highlight.Parent = Storage
+        local plrchar = plr.Character
+        if plrchar then
+            Highlight.Adornee = plrchar
+        end
+        connections[plr] = plr.CharacterAdded:Connect(function(char)
+            Highlight.Adornee = char
+        end)
+    end
+    Players.PlayerAdded:Connect(Highlight)
+    for i,v in next, Players:GetPlayers() do
+        Highlight(v)
+    end
+    Players.PlayerRemoving:Connect(function(plr)
+        if Storage[plr.Name] then Storage[plr.Name]:Destroy() end
+        if connections[plr] then connections[plr]:Disconnect() end
+    end)
+end })
+
+-- Continue the rest (same style, translated names like: "Float Walk", "Spectate", "Zombie", "Music", etc.)
