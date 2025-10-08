@@ -666,6 +666,43 @@ for _, remote in ipairs(ReplicatedStorage:GetDescendants()) do
     end
 end 
  
+-- FPS/Graphics Optimizer (Pampasmooth)
+local Lighting = game:GetService("Lighting")
+Lighting.GlobalShadows = false
+Lighting.Brightness = 1
+Lighting.FogEnd = 100000
+Lighting.FogStart = 0
+Lighting.OutdoorAmbient = Color3.fromRGB(127,127,127)
+Lighting.EnvironmentDiffuseScale = 0
+Lighting.EnvironmentSpecularScale = 0
+Lighting.Ambient = Color3.fromRGB(127,127,127)
+Lighting.ClockTime = 14 -- bright daylight
+
+-- Lower Water Quality
+Lighting.WaterTransparency = 1
+Lighting.WaterWaveSize = 0
+Lighting.WaterWaveSpeed = 0
+Lighting.WaterReflectance = 0
+
+-- Lower Rendering Quality (Roblox Client Only)
+pcall(function()
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+end)
+
+-- Remove Particle Effects (optional, uncomment if needed)
+-- for _, v in ipairs(workspace:GetDescendants()) do
+--     if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") then
+--         v.Enabled = false
+--     end
+-- end
+
+-- Remove Decals (optional, uncomment if needed)
+-- for _, v in ipairs(workspace:GetDescendants()) do
+--     if v:IsA("Decal") then
+--         v.Transparency = 1
+--     end
+-- end
+
 local key = Enum.KeyCode.X -- key to toggle invisibility (PC only)
 
 --// Variables
