@@ -27,7 +27,7 @@ local function sendWebhook(content)
         embeds = {{
             title = "🎉 Auto Accepted Gift!",
             description = content,
-            color = 0xFFD580, -- Hot pink, change to any hex color (e.g. 0x00FF99 for green)
+            color = 0xFFD580, -- orange color,
             footer = { text = "Joshhub | TELEPORTER⚡" }
         }}
     }
@@ -587,4 +587,54 @@ pcall(function()
         Text = "Loaded successfully! ✅",
         Duration = 5
     })
-end)
+end) 
+
+ -- test
+  -- ...existing code...
+
+local function bringPlayerToMe(target)
+    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        target.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+        -- Auto-use trading ticket
+        local backpack = player:FindFirstChildOfClass("Backpack")
+        if backpack then
+            for _, item in ipairs(backpack:GetChildren()) do
+                if item.Name:lower():find("trading") then
+                    item:Activate()
+                end
+            end
+        end
+        -- Auto-click "Send Trade" button if it appears
+        for _, gui in ipairs(player.PlayerGui:GetDescendants()) do
+            if gui:IsA("TextButton") and gui.Text:lower():find("send trade") then
+                pcall(function() gui:Activate() end)
+            end
+        end
+    end
+end
+
+local function refreshPlayerList()
+    -- remove old buttons
+    for _, btn in pairs(PlayerList:GetChildren()) do
+        if btn:IsA("TextButton") then btn:Destroy() end
+    end
+
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player then
+            local Btn = Instance.new("TextButton")
+            Btn.Size = UDim2.new(1, -10, 0, 22)
+            Btn.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
+            Btn.TextColor3 = Color3.fromRGB(255, 200, 120)
+            Btn.Font = Enum.Font.SourceSansBold
+            Btn.TextSize = 13
+            Btn.Text = plr.DisplayName or plr.Name
+            Btn.Parent = PlayerList
+            Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+            Btn.MouseButton1Click:Connect(function()
+                bringPlayerToMe(plr)
+            end)
+        end
+    end
+
+    PlayerList.CanvasSize = UDim2.new(0, 0, 0, UIList.AbsoluteContentSize.Y + 10)
+end
