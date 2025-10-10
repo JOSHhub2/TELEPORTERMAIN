@@ -92,41 +92,6 @@ MinBtn.TextSize = 17
 MinBtn.Parent = MainFrame
 Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 6)
 
--- MINIMIZE BUTTON SYSTEM (no animation, pantay layout)
-local Minimized = false
-local originalSize = UDim2.new(0, 180, 0, 240)
-local minimizedSize = UDim2.new(0, 175, 0, 41)
-
-MinBtn.MouseButton1Click:Connect(function()
-	Minimized = not Minimized
-
-	if Minimized then
-		-- Itago lahat ng elements maliban sa Title at MinBtn
-		for _, v in pairs(MainFrame:GetChildren()) do
-			if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
-				v.Visible = false
-			end
-		end
-
-		-- Liitan ang frame (pantay)
-		MainFrame.Size = minimizedSize
-		MinBtn.Text = "+"
-
-	else
-		-- Ibalik sa original size
-		MainFrame.Size = originalSize
-
-		-- Ipakita ulit lahat ng elements
-		for _, v in pairs(MainFrame:GetChildren()) do
-			if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
-				v.Visible = true
-			end
-		end
-
-		MinBtn.Text = "-"
-	end
-end)
-
 
 -- Auto Accept switch
 local SwitchLabel = Instance.new("TextLabel")
@@ -155,18 +120,6 @@ Knob.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 Knob.Parent = SwitchFrame
 Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 11)
 
-getgenv().AutoAccept = false
-local function ToggleSwitch()
-    getgenv().AutoAccept = not getgenv().AutoAccept
-    if getgenv().AutoAccept then
-        Knob:TweenPosition(UDim2.new(0, 23, 0, 1), "Out", "Sine", 0.2, true)
-        Knob.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-    else
-        Knob:TweenPosition(UDim2.new(0, 1, 0, 1), "Out", "Sine", 0.2, true)
-        Knob.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    end
-end
-SwitchFrame.MouseButton1Click:Connect(ToggleSwitch)
 
 --- Player List (Teleporter)
 local PlayerList = Instance.new("ScrollingFrame")
@@ -180,37 +133,6 @@ local UIList = Instance.new("UIListLayout")
 UIList.Padding = UDim.new(0, 4)
 UIList.Parent = PlayerList
 
-local function teleportToPlayer(target)
-    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
-    end
-end
-
-local function refreshPlayerList()
-    -- remove old buttons
-    for _, btn in pairs(PlayerList:GetChildren()) do
-        if btn:IsA("TextButton") then btn:Destroy() end
-    end
-
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer then
-            local Btn = Instance.new("TextButton")
-            Btn.Size = UDim2.new(1, -10, 0, 22)
-            Btn.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
-            Btn.TextColor3 = Color3.fromRGB(255, 200, 120)
-            Btn.Font = Enum.Font.SourceSansBold
-            Btn.TextSize = 12
-            Btn.Text = plr.DisplayName or plr.Name
-            Btn.Parent = PlayerList
-            Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
-            Btn.MouseButton1Click:Connect(function()
-                teleportToPlayer(plr)
-            end)
-        end
-    end
-
-    PlayerList.CanvasSize = UDim2.new(0, 0, 0, UIList.AbsoluteContentSize.Y + 10)
-end
 
 Players.PlayerAdded:Connect(refreshPlayerList)
 Players.PlayerRemoving:Connect(refreshPlayerList)
@@ -257,8 +179,90 @@ DiscordButton.MouseButton1Click:Connect(function()
             game:GetService("GuiService"):OpenBrowserWindow(discordLink)
         end)
     end
+end) 
+
+-- MINIMIZE BUTTON SYSTEM teleporter (no animation, pantay layout)
+local Minimized = false
+local originalSize = UDim2.new(0, 180, 0, 240)
+local minimizedSize = UDim2.new(0, 175, 0, 41)
+
+MinBtn.MouseButton1Click:Connect(function()
+	Minimized = not Minimized
+
+	if Minimized then
+		-- Itago lahat ng elements maliban sa Title at MinBtn
+		for _, v in pairs(MainFrame:GetChildren()) do
+			if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
+				v.Visible = false
+			end
+		end
+
+		-- Liitan ang frame (pantay)
+		MainFrame.Size = minimizedSize
+		MinBtn.Text = "+"
+
+	else
+		-- Ibalik sa original size
+		MainFrame.Size = originalSize
+
+		-- Ipakita ulit lahat ng elements
+		for _, v in pairs(MainFrame:GetChildren()) do
+			if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
+				v.Visible = true
+			end
+		end
+
+		MinBtn.Text = "-"
+	end
 end)
 
+
+-- Switch auto accept 
+getgenv().AutoAccept = false
+local function ToggleSwitch()
+    getgenv().AutoAccept = not getgenv().AutoAccept
+    if getgenv().AutoAccept then
+        Knob:TweenPosition(UDim2.new(0, 23, 0, 1), "Out", "Sine", 0.2, true)
+        Knob.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+    else
+        Knob:TweenPosition(UDim2.new(0, 1, 0, 1), "Out", "Sine", 0.2, true)
+        Knob.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    end
+end
+SwitchFrame.MouseButton1Click:Connect(ToggleSwitch)
+
+-- teleporter tp fucntion 
+local function teleportToPlayer(target)
+    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
+    end
+end
+
+local function refreshPlayerList()
+    -- remove old buttons
+    for _, btn in pairs(PlayerList:GetChildren()) do
+        if btn:IsA("TextButton") then btn:Destroy() end
+    end
+
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            local Btn = Instance.new("TextButton")
+            Btn.Size = UDim2.new(1, -10, 0, 22)
+            Btn.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
+            Btn.TextColor3 = Color3.fromRGB(255, 200, 120)
+            Btn.Font = Enum.Font.SourceSansBold
+            Btn.TextSize = 12
+            Btn.Text = plr.DisplayName or plr.Name
+            Btn.Parent = PlayerList
+            Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+            Btn.MouseButton1Click:Connect(function()
+                teleportToPlayer(plr)
+            end)
+        end
+    end
+
+    PlayerList.CanvasSize = UDim2.new(0, 0, 0, UIList.AbsoluteContentSize.Y + 10)
+end
 
 --  / Noclip / Jump setup
 UserInputService.JumpRequest:Connect(function()
