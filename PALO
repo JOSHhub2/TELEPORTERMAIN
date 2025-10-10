@@ -53,15 +53,15 @@ ScreenGui.Name = "JoshhubScript👁️"
 ScreenGui.Parent = game:GetService("CoreGui")
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 160, 0, 210) -- bawas size
-MainFrame.Position = UDim2.new(0.03, 0, 0.27, 0)
+MainFrame.Size = UDim2.new(0, 175, 0, 240) -- 3 bawas sa laki
+MainFrame.Position = UDim2.new(0.03, 0, 0.26, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
 local UICornerMain = Instance.new("UICorner", MainFrame)
-UICornerMain.CornerRadius = UDim.new(0, 10)
+UICornerMain.CornerRadius = UDim.new(0, 11)
 
 local UIGradient = Instance.new("UIGradient", MainFrame)
 UIGradient.Color = ColorSequence.new({
@@ -71,45 +71,56 @@ UIGradient.Color = ColorSequence.new({
 UIGradient.Rotation = 90
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -30, 0, 24)
+Title.Size = UDim2.new(1, -32, 0, 27)
 Title.Position = UDim2.new(0, 8, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "🔮 TELEPORTER GAG JOSH"
 Title.TextColor3 = Color3.fromRGB(144, 238, 144)
 Title.Font = Enum.Font.Fantasy
-Title.TextSize = 12
+Title.TextSize = 13
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = MainFrame
 
 local MinBtn = Instance.new("TextButton")
-MinBtn.Size = UDim2.new(0, 20, 0, 20)
-MinBtn.Position = UDim2.new(1, -24, 0, 3)
+MinBtn.Size = UDim2.new(0, 22, 0, 22)
+MinBtn.Position = UDim2.new(1, -26, 0, 3)
 MinBtn.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
 MinBtn.TextColor3 = Color3.fromRGB(255, 180, 120)
 MinBtn.Text = "-"
 MinBtn.Font = Enum.Font.SourceSansBold
-MinBtn.TextSize = 16
+MinBtn.TextSize = 17
 MinBtn.Parent = MainFrame
-Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 6)
 
-local Minimized = false
 MinBtn.MouseButton1Click:Connect(function()
     Minimized = not Minimized
+
     if Minimized then
+        -- hide children except title + minbtn
         for _, v in pairs(MainFrame:GetChildren()) do
             if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
                 v.Visible = false
             end
         end
-        MainFrame.Size = UDim2.new(0, 230, 0, 40)
+
+        -- tween shrink
+        TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 175, 0, 40)
+        }):Play()
         MinBtn.Text = "+"
+
     else
+        -- tween back to original
+        TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Size = originalSize
+        }):Play()
+
+        task.wait(0.25) -- wait slight before show content
         for _, v in pairs(MainFrame:GetChildren()) do
             if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
                 v.Visible = true
             end
         end
-        MainFrame.Size = UDim2.new(0, 230, 0, 300)
         MinBtn.Text = "-"
     end
 end) 
@@ -117,30 +128,30 @@ end)
 
 -- Auto Accept switch
 local SwitchLabel = Instance.new("TextLabel")
-SwitchLabel.Size = UDim2.new(0, 110, 0, 18)
-SwitchLabel.Position = UDim2.new(0, 10, 0, 32)
+SwitchLabel.Size = UDim2.new(0, 125, 0, 19)
+SwitchLabel.Position = UDim2.new(0, 10, 0, 35)
 SwitchLabel.BackgroundTransparency = 1
 SwitchLabel.Text = "Auto Accept Gift"
 SwitchLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 SwitchLabel.TextXAlignment = Enum.TextXAlignment.Left
 SwitchLabel.Font = Enum.Font.SourceSansBold
-SwitchLabel.TextSize = 11
+SwitchLabel.TextSize = 12
 SwitchLabel.Parent = MainFrame
 
 local SwitchFrame = Instance.new("TextButton")
-SwitchFrame.Size = UDim2.new(0, 40, 0, 18)
-SwitchFrame.Position = UDim2.new(0, 120, 0, 32)
+SwitchFrame.Size = UDim2.new(0, 43, 0, 19)
+SwitchFrame.Position = UDim2.new(0, 130, 0, 35)
 SwitchFrame.BackgroundColor3 = Color3.fromRGB(80, 40, 40)
 SwitchFrame.Text = ""
 SwitchFrame.Parent = MainFrame
-Instance.new("UICorner", SwitchFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", SwitchFrame).CornerRadius = UDim.new(0, 11)
 
 local Knob = Instance.new("Frame")
-Knob.Size = UDim2.new(0, 16, 0, 16)
+Knob.Size = UDim2.new(0, 17, 0, 17)
 Knob.Position = UDim2.new(0, 1, 0, 1)
 Knob.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 Knob.Parent = SwitchFrame
-Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 11)
 
 getgenv().AutoAccept = false
 local function ToggleSwitch()
@@ -155,10 +166,10 @@ local function ToggleSwitch()
 end
 SwitchFrame.MouseButton1Click:Connect(ToggleSwitch)
 
--- Player List (Teleporter)
+--- Player List (Teleporter)
 local PlayerList = Instance.new("ScrollingFrame")
-PlayerList.Size = UDim2.new(1, -18, 0, 70)
-PlayerList.Position = UDim2.new(0, 9, 0, 55)
+PlayerList.Size = UDim2.new(1, -19, 0, 82)
+PlayerList.Position = UDim2.new(0, 10, 0, 60)
 PlayerList.BackgroundTransparency = 1
 PlayerList.ScrollBarThickness = 4
 PlayerList.Parent = MainFrame
@@ -186,7 +197,7 @@ local function refreshPlayerList()
             Btn.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
             Btn.TextColor3 = Color3.fromRGB(255, 200, 120)
             Btn.Font = Enum.Font.SourceSansBold
-            Btn.TextSize = 13
+            Btn.TextSize = 12
             Btn.Text = plr.DisplayName or plr.Name
             Btn.Parent = PlayerList
             Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
@@ -205,31 +216,30 @@ refreshPlayerList()
 
 -- Leave Button
 local LeaveButton = Instance.new("TextButton")
-LeaveButton.Size = UDim2.new(1, -18, 0, 24)
-LeaveButton.Position = UDim2.new(0, 9, 1, -30)
+LeaveButton.Size = UDim2.new(1, -19, 0, 26)
+LeaveButton.Position = UDim2.new(0, 10, 1, -32)
 LeaveButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 LeaveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 LeaveButton.Text = "❌ LEAVE"
 LeaveButton.Font = Enum.Font.SourceSansBold
-LeaveButton.TextSize = 11
+LeaveButton.TextSize = 12
 LeaveButton.Parent = MainFrame
-Instance.new("UICorner", LeaveButton).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", LeaveButton).CornerRadius = UDim.new(0, 6)
 
 LeaveButton.MouseButton1Click:Connect(function()
-    game.Players.LocalPlayer:Kick("YOU KICK BY JOSH☠️")
-end)
+game.Players.LocalPlayer:Kick("YOU KICK BY JOSH☠️") end)
 
 -- Discord Button
 local DiscordButton = Instance.new("TextButton")
-DiscordButton.Size = UDim2.new(1, -18, 0, 24)
-DiscordButton.Position = UDim2.new(0, 9, 1, -58)
+DiscordButton.Size = UDim2.new(1, -19, 0, 26)
+DiscordButton.Position = UDim2.new(0, 10, 1, -60)
 DiscordButton.BackgroundColor3 = Color3.fromRGB(100, 0, 255)
 DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 DiscordButton.Text = "🔗 DISCORD"
 DiscordButton.Font = Enum.Font.SourceSansBold
-DiscordButton.TextSize = 11
+DiscordButton.TextSize = 12
 DiscordButton.Parent = MainFrame
-Instance.new("UICorner", DiscordButton).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", DiscordButton).CornerRadius = UDim.new(0, 6)
 
 DiscordButton.MouseButton1Click:Connect(function()
     local discordLink = "https://discord.gg/wVfHjz47"
