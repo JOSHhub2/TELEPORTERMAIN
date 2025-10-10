@@ -53,7 +53,7 @@ ScreenGui.Name = "JoshhubScript👁️"
 ScreenGui.Parent = game:GetService("CoreGui")
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 190, 0, 299)
+MainFrame.Size = UDim2.new(0, 190, 0, 260)
 MainFrame.Position = UDim2.new(0.03, 0, 0.25, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
 MainFrame.Active = true
@@ -71,24 +71,24 @@ UIGradient.Color = ColorSequence.new({
 UIGradient.Rotation = 90
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -35, 0, 35)
+Title.Size = UDim2.new(1, -35, 0, 30)
 Title.Position = UDim2.new(0, 8, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "🔮 TELEPORTER GAG JOSH"
 Title.TextColor3 = Color3.fromRGB(144, 238, 144)
 Title.Font = Enum.Font.Fantasy
-Title.TextSize = 15
+Title.TextSize = 14
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = MainFrame
 
 local MinBtn = Instance.new("TextButton")
-MinBtn.Size = UDim2.new(0, 28, 0, 28)
-MinBtn.Position = UDim2.new(1, -32, 0, 4)
+MinBtn.Size = UDim2.new(0, 24, 0, 24)
+MinBtn.Position = UDim2.new(1, -28, 0, 3)
 MinBtn.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
 MinBtn.TextColor3 = Color3.fromRGB(255, 180, 120)
 MinBtn.Text = "-"
 MinBtn.Font = Enum.Font.SourceSansBold
-MinBtn.TextSize = 20
+MinBtn.TextSize = 18
 MinBtn.Parent = MainFrame
 Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 6)
 
@@ -117,8 +117,8 @@ end)
 
 -- Auto Accept switch
 local SwitchLabel = Instance.new("TextLabel")
-SwitchLabel.Size = UDim2.new(0, 130, 0, 25)
-SwitchLabel.Position = UDim2.new(0, 10, 0, 45)
+SwitchLabel.Size = UDim2.new(0, 130, 0, 20)
+SwitchLabel.Position = UDim2.new(0, 10, 0, 38)
 SwitchLabel.BackgroundTransparency = 1
 SwitchLabel.Text = "Auto Accept Gift"
 SwitchLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -128,15 +128,15 @@ SwitchLabel.TextSize = 12
 SwitchLabel.Parent = MainFrame
 
 local SwitchFrame = Instance.new("TextButton")
-SwitchFrame.Size = UDim2.new(0, 45, 0, 22)
-SwitchFrame.Position = UDim2.new(0, 150, 0, 47)
+SwitchFrame.Size = UDim2.new(0, 45, 0, 20)
+SwitchFrame.Position = UDim2.new(0, 135, 0, 38)
 SwitchFrame.BackgroundColor3 = Color3.fromRGB(80, 40, 40)
 SwitchFrame.Text = ""
 SwitchFrame.Parent = MainFrame
 Instance.new("UICorner", SwitchFrame).CornerRadius = UDim.new(0, 12)
 
 local Knob = Instance.new("Frame")
-Knob.Size = UDim2.new(0, 20, 0, 20)
+Knob.Size = UDim2.new(0, 18, 0, 18)
 Knob.Position = UDim2.new(0, 1, 0, 1)
 Knob.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 Knob.Parent = SwitchFrame
@@ -157,10 +157,10 @@ SwitchFrame.MouseButton1Click:Connect(ToggleSwitch)
 
 -- Player List (Teleporter)
 local PlayerList = Instance.new("ScrollingFrame")
-PlayerList.Size = UDim2.new(1, -20, 0, 110)
-PlayerList.Position = UDim2.new(0, 10, 0, 80)
+PlayerList.Size = UDim2.new(1, -20, 0, 90)
+PlayerList.Position = UDim2.new(0, 10, 0, 65)
 PlayerList.BackgroundTransparency = 1
-PlayerList.ScrollBarThickness = 5
+PlayerList.ScrollBarThickness = 4
 PlayerList.Parent = MainFrame
 
 local UIList = Instance.new("UIListLayout")
