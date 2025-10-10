@@ -92,46 +92,39 @@ MinBtn.TextSize = 17
 MinBtn.Parent = MainFrame
 Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 6)
 
-local TweenService = game:GetService("TweenService")
+-- MINIMIZE BUTTON SYSTEM (no animation, pantay layout)
 local Minimized = false
-local originalSize = MainFrame.Size  -- store original size (175x240)
+local originalSize = UDim2.new(0, 175, 0, 240)
 local minimizedSize = UDim2.new(0, 175, 0, 40)
 
 MinBtn.MouseButton1Click:Connect(function()
-    Minimized = not Minimized
+	Minimized = not Minimized
 
-    if Minimized then
-        -- Hide all children except Title + MinBtn
-        for _, v in pairs(MainFrame:GetChildren()) do
-            if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
-                v.Visible = false
-            end
-        end
+	if Minimized then
+		-- Itago lahat ng elements maliban sa Title at MinBtn
+		for _, v in pairs(MainFrame:GetChildren()) do
+			if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
+				v.Visible = false
+			end
+		end
 
-        -- Tween shrink (minimize)
-        TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-            Size = minimizedSize
-        }):Play()
-        MinBtn.Text = "+"
+		-- Liitan ang frame (pantay)
+		MainFrame.Size = minimizedSize
+		MinBtn.Text = "+"
 
-    else
-        -- Tween expand (maximize)
-        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-            Size = originalSize
-        })
-        tween:Play()
+	else
+		-- Ibalik sa original size
+		MainFrame.Size = originalSize
 
-        -- Wait until finished expanding before showing elements
-        tween.Completed:Wait()
+		-- Ipakita ulit lahat ng elements
+		for _, v in pairs(MainFrame:GetChildren()) do
+			if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
+				v.Visible = true
+			end
+		end
 
-        for _, v in pairs(MainFrame:GetChildren()) do
-            if (v ~= Title) and (v ~= MinBtn) and not v:IsA("UICorner") and not v:IsA("UIGradient") then
-                v.Visible = true
-            end
-        end
-
-        MinBtn.Text = "-"
-    end
+		MinBtn.Text = "-"
+	end
 end)
 
 
