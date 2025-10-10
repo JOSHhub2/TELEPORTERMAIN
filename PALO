@@ -53,7 +53,7 @@ ScreenGui.Name = "JoshhubScript👁️"
 ScreenGui.Parent = game:GetService("CoreGui")
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 175, 0, 240) -- 3 bawas sa laki
+MainFrame.Size = UDim2.new(0, 185, 0, 245) -- 3 bawas sa laki
 MainFrame.Position = UDim2.new(0.03, 0, 0.26, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
 MainFrame.Active = true
@@ -71,7 +71,7 @@ UIGradient.Color = ColorSequence.new({
 UIGradient.Rotation = 90
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -32, 0, 27)
+Title.Size = UDim2.new(1, -31, 0, 27)
 Title.Position = UDim2.new(0, 8, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "🔮 TELEPORTER GAG JOSH"
@@ -94,8 +94,8 @@ Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 6)
 
 -- MINIMIZE BUTTON SYSTEM (no animation, pantay layout)
 local Minimized = false
-local originalSize = UDim2.new(0, 175, 0, 240)
-local minimizedSize = UDim2.new(0, 175, 0, 40)
+local originalSize = UDim2.new(0, 180, 0, 240)
+local minimizedSize = UDim2.new(0, 175, 0, 41)
 
 MinBtn.MouseButton1Click:Connect(function()
 	Minimized = not Minimized
