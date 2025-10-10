@@ -545,6 +545,3 @@ pcall(function()
     })
 end)
 
--- -----------------------------
--- External Invisible Script Loader
-loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invisible-script-20557"))()
