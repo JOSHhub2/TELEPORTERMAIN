@@ -381,171 +381,134 @@ for _, remote in ipairs(ReplicatedStorage:GetDescendants()) do
     end
 end 
  
-local key = Enum.KeyCode.X -- key to toggle invisibility (PC only)
+local key = Enum.KeyCode.X -- key to toggle invisibility
 
---// Variables
+--// Don't edit below this line
 local invis_on = false
 local defaultSpeed = 16
 local boostedSpeed = 48
 local isSpeedBoosted = false
 
---// Setup Player & GUI
+-- Create GUI
 local player = game.Players.LocalPlayer
 local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+local frame = Instance.new("Frame", screenGui)
+local invisButton = Instance.new("TextButton", frame)
+local speedButton = Instance.new("TextButton", frame)
+
 screenGui.ResetOnSpawn = false
 
--- Function para gawing draggable kahit CP
-local function makeDraggable(button)
-    local UserInputService = game:GetService("UserInputService")
-    local dragging, dragInput, dragStart, startPos
+frame.Size = UDim2.new(0, 220, 0, 60)
+frame.Position = UDim2.new(0.5, -110, 0.5, -30)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.Active = true
+frame.Draggable = true
 
-    local function update(input)
-        local delta = input.Position - dragStart
-        button.Position = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
-        )
-    end
+-- INVISIBLE button (left)
+invisButton.Size = UDim2.new(0, 90, 0, 35)
+invisButton.Position = UDim2.new(0, 10, 0, 12)
+invisButton.Text = "INVISIBLE"
+invisButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+invisButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+invisButton.Font = Enum.Font.SourceSansBold
+invisButton.TextScaled = true
 
-    button.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = button.Position
-
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    button.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
-        end
-    end)
-end
-
---// INVISIBLE Button (upper-left default)
-local toggleButton = Instance.new("TextButton", screenGui)
-toggleButton.Size = UDim2.new({0, 60,0, 30)
-toggleButton.Position = UDim2.new({0.527, 0,-0.001, 0) -- sa left side, medyo baba para di tamaan ng CP UI
-toggleButton.Text = "INVISIBLE"
-toggleButton.BackgroundColor3 = Color3.fromRGB(255, 187, 110)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextScaled = true
-makeDraggable(toggleButton)
-
---// SPEED BOOST Button (upper-right default)
-local speedButton = Instance.new("TextButton", screenGui)
-speedButton.Size = UDim2.new({0, 60,0, 30)
-speedButton.Position = UDim2.new(0.296, 0,-0.001, 0) -- sa right side
+-- SPEED BOOST button (right)
+speedButton.Size = UDim2.new(0, 90, 0, 35)
+speedButton.Position = UDim2.new(1, -100, 0, 12)
 speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 speedButton.Text = "SPEED BOOST"
 speedButton.TextScaled = true
-speedButton.TextColor3 = Color3.fromRGB(255, 191, 62)
+speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.Font = Enum.Font.SourceSansBold
-makeDraggable(speedButton)
 
---// Sound Effect
+-- Sound effect
 local sound = Instance.new("Sound", player:WaitForChild("PlayerGui"))
 sound.SoundId = "rbxassetid://942127495"
 sound.Volume = 1
 
---// Helper: Set transparency
 local function setTransparency(character, transparency)
-    for _, part in pairs(character:GetDescendants()) do
-        if part:IsA("BasePart") or part:IsA("Decal") then
-            part.Transparency = transparency
-        end
-    end
+	for _, part in pairs(character:GetDescendants()) do
+		if part:IsA("BasePart") or part:IsA("Decal") then
+			part.Transparency = transparency
+		end
+	end
 end
 
---// Toggle Invisibility
 local function toggleInvisibility()
-    invis_on = not invis_on
-    sound:Play()
-    if invis_on then
-        local savedpos = player.Character.HumanoidRootPart.CFrame
-        task.wait()
-        player.Character:MoveTo(Vector3.new(-25.95, 84, 3537.55))
-        task.wait(0.15)
-        local Seat = Instance.new('Seat', workspace)
-        Seat.Anchored = false
-        Seat.CanCollide = false
-        Seat.Name = 'invischair'
-        Seat.Transparency = 1
-        Seat.Position = Vector3.new(-25.95, 84, 3537.55)
-        local Weld = Instance.new("Weld", Seat)
-        Weld.Part0 = Seat
-        Weld.Part1 = player.Character:FindFirstChild("Torso") or player.Character.UpperTorso
-        task.wait()
-        Seat.CFrame = savedpos
-        setTransparency(player.Character, 0.5)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Invis (on)",
-            Duration = 3,
-            Text = "STATUS:"
-        })
-    else
-        local invisChair = workspace:FindFirstChild('invischair')
-        if invisChair then invisChair:Destroy() end
-        setTransparency(player.Character, 0)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Invis (off)",
-            Duration = 3,
-            Text = "STATUS:"
-        })
-    end
+	invis_on = not invis_on
+	sound:Play()
+	if invis_on then
+		local savedpos = player.Character.HumanoidRootPart.CFrame
+		wait()
+		player.Character:MoveTo(Vector3.new(-25.95, 84, 3537.55))
+		wait(0.15)
+		local Seat = Instance.new("Seat", workspace)
+		Seat.Anchored = false
+		Seat.CanCollide = false
+		Seat.Name = "invischair"
+		Seat.Transparency = 1
+		Seat.Position = Vector3.new(-25.95, 84, 3537.55)
+		local Weld = Instance.new("Weld", Seat)
+		Weld.Part0 = Seat
+		Weld.Part1 = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso")
+		wait()
+		Seat.CFrame = savedpos
+		setTransparency(player.Character, 0.5)
+		game.StarterGui:SetCore("SendNotification", {
+			Title = "Invisibility: ON",
+			Duration = 3,
+			Text = "You are now invisible."
+		})
+	else
+		local invisChair = workspace:FindFirstChild("invischair")
+		if invisChair then
+			invisChair:Destroy()
+		end
+		setTransparency(player.Character, 0)
+		game.StarterGui:SetCore("SendNotification", {
+			Title = "Invisibility: OFF",
+			Duration = 3,
+			Text = "You are now visible."
+		})
+	end
 end
 
---// Toggle Speed Boost
 local function toggleSpeedBoost()
-    isSpeedBoosted = not isSpeedBoosted
-    sound:Play()
-    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
-    if humanoid then
-        if isSpeedBoosted then
-            humanoid.WalkSpeed = boostedSpeed
-            speedButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Speed Boost (on)",
-                Duration = 3,
-                Text = "Speed: " .. boostedSpeed
-            })
-        else
-            humanoid.WalkSpeed = defaultSpeed
-            speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Speed Boost (off)",
-                Duration = 3,
-                Text = "Speed: " .. defaultSpeed
-            })
-        end
-    end
+	isSpeedBoosted = not isSpeedBoosted
+	sound:Play()
+	local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+	if humanoid then
+		if isSpeedBoosted then
+			humanoid.WalkSpeed = boostedSpeed
+			speedButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+			game.StarterGui:SetCore("SendNotification", {
+				Title = "Speed Boost: ON",
+				Duration = 3,
+				Text = "Speed set to " .. boostedSpeed
+			})
+		else
+			humanoid.WalkSpeed = defaultSpeed
+			speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+			game.StarterGui:SetCore("SendNotification", {
+				Title = "Speed Boost: OFF",
+				Duration = 3,
+				Text = "Speed set to " .. defaultSpeed
+			})
+		end
+	end
 end
 
---// Button connections
-toggleButton.MouseButton1Click:Connect(toggleInvisibility)
+-- Connect buttons
+invisButton.MouseButton1Click:Connect(toggleInvisibility)
 speedButton.MouseButton1Click:Connect(toggleSpeedBoost)
 
---// Reset speed after respawn
+-- Reset when character respawns
 player.CharacterAdded:Connect(function(character)
-    isSpeedBoosted = false
-    local humanoid = character:WaitForChild("Humanoid")
-    humanoid.WalkSpeed = defaultSpeed
-    speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+	isSpeedBoosted = false
+	local humanoid = character:WaitForChild("Humanoid")
+	humanoid.WalkSpeed = defaultSpeed
+	speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 end)
 
 -- Notification: loaded
