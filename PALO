@@ -53,15 +53,15 @@ ScreenGui.Name = "JoshhubScript👁️"
 ScreenGui.Parent = game:GetService("CoreGui")
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 190, 0, 260)
-MainFrame.Position = UDim2.new(0.03, 0, 0.25, 0)
+MainFrame.Size = UDim2.new(0, 160, 0, 210) -- bawas size
+MainFrame.Position = UDim2.new(0.03, 0, 0.27, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
 local UICornerMain = Instance.new("UICorner", MainFrame)
-UICornerMain.CornerRadius = UDim.new(0, 12)
+UICornerMain.CornerRadius = UDim.new(0, 10)
 
 local UIGradient = Instance.new("UIGradient", MainFrame)
 UIGradient.Color = ColorSequence.new({
@@ -71,26 +71,26 @@ UIGradient.Color = ColorSequence.new({
 UIGradient.Rotation = 90
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -35, 0, 30)
+Title.Size = UDim2.new(1, -30, 0, 24)
 Title.Position = UDim2.new(0, 8, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "🔮 TELEPORTER GAG JOSH"
 Title.TextColor3 = Color3.fromRGB(144, 238, 144)
 Title.Font = Enum.Font.Fantasy
-Title.TextSize = 14
+Title.TextSize = 12
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = MainFrame
 
 local MinBtn = Instance.new("TextButton")
-MinBtn.Size = UDim2.new(0, 24, 0, 24)
-MinBtn.Position = UDim2.new(1, -28, 0, 3)
+MinBtn.Size = UDim2.new(0, 20, 0, 20)
+MinBtn.Position = UDim2.new(1, -24, 0, 3)
 MinBtn.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
 MinBtn.TextColor3 = Color3.fromRGB(255, 180, 120)
 MinBtn.Text = "-"
 MinBtn.Font = Enum.Font.SourceSansBold
-MinBtn.TextSize = 18
+MinBtn.TextSize = 16
 MinBtn.Parent = MainFrame
-Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 6)
+Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 5)
 
 local Minimized = false
 MinBtn.MouseButton1Click:Connect(function()
@@ -117,30 +117,30 @@ end)
 
 -- Auto Accept switch
 local SwitchLabel = Instance.new("TextLabel")
-SwitchLabel.Size = UDim2.new(0, 130, 0, 20)
-SwitchLabel.Position = UDim2.new(0, 10, 0, 38)
+SwitchLabel.Size = UDim2.new(0, 110, 0, 18)
+SwitchLabel.Position = UDim2.new(0, 10, 0, 32)
 SwitchLabel.BackgroundTransparency = 1
 SwitchLabel.Text = "Auto Accept Gift"
 SwitchLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 SwitchLabel.TextXAlignment = Enum.TextXAlignment.Left
 SwitchLabel.Font = Enum.Font.SourceSansBold
-SwitchLabel.TextSize = 12
+SwitchLabel.TextSize = 11
 SwitchLabel.Parent = MainFrame
 
 local SwitchFrame = Instance.new("TextButton")
-SwitchFrame.Size = UDim2.new(0, 45, 0, 20)
-SwitchFrame.Position = UDim2.new(0, 135, 0, 38)
+SwitchFrame.Size = UDim2.new(0, 40, 0, 18)
+SwitchFrame.Position = UDim2.new(0, 120, 0, 32)
 SwitchFrame.BackgroundColor3 = Color3.fromRGB(80, 40, 40)
 SwitchFrame.Text = ""
 SwitchFrame.Parent = MainFrame
-Instance.new("UICorner", SwitchFrame).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", SwitchFrame).CornerRadius = UDim.new(0, 10)
 
 local Knob = Instance.new("Frame")
-Knob.Size = UDim2.new(0, 18, 0, 18)
+Knob.Size = UDim2.new(0, 16, 0, 16)
 Knob.Position = UDim2.new(0, 1, 0, 1)
 Knob.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 Knob.Parent = SwitchFrame
-Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", Knob).CornerRadius = UDim.new(0, 10)
 
 getgenv().AutoAccept = false
 local function ToggleSwitch()
@@ -157,8 +157,8 @@ SwitchFrame.MouseButton1Click:Connect(ToggleSwitch)
 
 -- Player List (Teleporter)
 local PlayerList = Instance.new("ScrollingFrame")
-PlayerList.Size = UDim2.new(1, -20, 0, 90)
-PlayerList.Position = UDim2.new(0, 10, 0, 65)
+PlayerList.Size = UDim2.new(1, -18, 0, 70)
+PlayerList.Position = UDim2.new(0, 9, 0, 55)
 PlayerList.BackgroundTransparency = 1
 PlayerList.ScrollBarThickness = 4
 PlayerList.Parent = MainFrame
@@ -205,33 +205,34 @@ refreshPlayerList()
 
 -- Leave Button
 local LeaveButton = Instance.new("TextButton")
-LeaveButton.Size = UDim2.new(1, -19, 0, 28)
-LeaveButton.Position = UDim2.new(0, 10, 1, -32)
+LeaveButton.Size = UDim2.new(1, -18, 0, 24)
+LeaveButton.Position = UDim2.new(0, 9, 1, -30)
 LeaveButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 LeaveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 LeaveButton.Text = "❌ LEAVE"
 LeaveButton.Font = Enum.Font.SourceSansBold
-LeaveButton.TextSize = 12
+LeaveButton.TextSize = 11
 LeaveButton.Parent = MainFrame
-Instance.new("UICorner", LeaveButton).CornerRadius = UDim.new(0, 6)
-LeaveButton.MouseButton1Click:Connect(function()
-    -- Kick the player with a message (unchanged content from original)
-    LocalPlayer:Kick("YOU KICK BY JOSH☠️")
-end) 
+Instance.new("UICorner", LeaveButton).CornerRadius = UDim.new(0, 5)
 
--- DISCORD BUTTON
-local DiscordButton = Instance.new("TextButton") 
-DiscordButton.Size = UDim2.new(1, -20, 0, 28) 
-DiscordButton.Position = UDim2.new(0, 10, 1, -65) 
-DiscordButton.BackgroundColor3 = Color3.fromRGB(100, 0, 255) 
-DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255) 
+LeaveButton.MouseButton1Click:Connect(function()
+    game.Players.LocalPlayer:Kick("YOU KICK BY JOSH☠️")
+end)
+
+-- Discord Button
+local DiscordButton = Instance.new("TextButton")
+DiscordButton.Size = UDim2.new(1, -18, 0, 24)
+DiscordButton.Position = UDim2.new(0, 9, 1, -58)
+DiscordButton.BackgroundColor3 = Color3.fromRGB(100, 0, 255)
+DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 DiscordButton.Text = "🔗 DISCORD"
-LeaveButton.Font = Enum.Font.SourceSansBold
-DiscordButton.TextSize = 12 
-DiscordButton.Parent = MainFrame 
-Instance.new("UICorner", DiscordButton).CornerRadius = UDim.new(0, 6) 
+DiscordButton.Font = Enum.Font.SourceSansBold
+DiscordButton.TextSize = 11
+DiscordButton.Parent = MainFrame
+Instance.new("UICorner", DiscordButton).CornerRadius = UDim.new(0, 5)
+
 DiscordButton.MouseButton1Click:Connect(function()
-    local discordLink = "https://discord.gg/wVfHjz47" -- Change to your Discord invite link
+    local discordLink = "https://discord.gg/wVfHjz47"
     if setclipboard then
         setclipboard(discordLink)
         game.StarterGui:SetCore("SendNotification", {
