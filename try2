@@ -392,35 +392,34 @@ local isSpeedBoosted = false
 -- Create GUI
 local player = game.Players.LocalPlayer
 local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-local frame = Instance.new("Frame", screenGui)
-local invisButton = Instance.new("TextButton", frame)
-local speedButton = Instance.new("TextButton", frame)
-
 screenGui.ResetOnSpawn = false
 
-frame.Size = UDim2.new(0, 220, 0, 60)
-frame.Position = UDim2.new(0.5, -110, 0.5, -30)
-frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-frame.Active = true
-frame.Draggable = true
-
--- INVISIBLE button (left)
-invisButton.Size = UDim2.new(0, 90, 0, 35)
-invisButton.Position = UDim2.new(0, 10, 0, 12)
+-- INVISIBLE button (top-left)
+local invisButton = Instance.new("TextButton", screenGui)
+invisButton.Size = UDim2.new(0, 110, 0, 40)
+invisButton.Position = UDim2.new(0, 15, 0, 15)
 invisButton.Text = "INVISIBLE"
 invisButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
 invisButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 invisButton.Font = Enum.Font.SourceSansBold
 invisButton.TextScaled = true
+invisButton.AutoButtonColor = true
+invisButton.Active = true
+invisButton.Draggable = true
 
--- SPEED BOOST button (right)
-speedButton.Size = UDim2.new(0, 90, 0, 35)
-speedButton.Position = UDim2.new(1, -100, 0, 12)
+-- SPEED BOOST button (top-right)
+local speedButton = Instance.new("TextButton", screenGui)
+speedButton.Size = UDim2.new(0, 110, 0, 40)
+speedButton.Position = UDim2.new(1, -125, 0, 15)
+speedButton.AnchorPoint = Vector2.new(0, 0)
 speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 speedButton.Text = "SPEED BOOST"
 speedButton.TextScaled = true
 speedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedButton.Font = Enum.Font.SourceSansBold
+speedButton.AutoButtonColor = true
+speedButton.Active = true
+speedButton.Draggable = true
 
 -- Sound effect
 local sound = Instance.new("Sound", player:WaitForChild("PlayerGui"))
