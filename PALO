@@ -92,6 +92,10 @@ MinBtn.TextSize = 17
 MinBtn.Parent = MainFrame
 Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 6)
 
+local TweenService = game:GetService("TweenService")
+local Minimized = false
+local originalSize = MainFrame.Size  -- store original size (175x240)
+
 MinBtn.MouseButton1Click:Connect(function()
     Minimized = not Minimized
 
@@ -123,7 +127,8 @@ MinBtn.MouseButton1Click:Connect(function()
         end
         MinBtn.Text = "-"
     end
-end) 
+end)
+ 
 
 
 -- Auto Accept switch
