@@ -1,11 +1,15 @@
 --// JoshhubScript Control Panel (Full Features + Webhook for AutoAccept only)
 --// Owner: JoshroxasScript
---// Allowed game only
-local ALLOWED_PLACE_ID = 127742093697776 -- Palitan ng mismong PlaceId ng game mo
+--// Safe Game Restrict Checker (Obfuscator-Proof)
+local allowedId = "127742093697776" -- lagay mo yung PlaceId dito as STRING
 
--- Check kung nasa tamang game
-if tostring(game.PlaceId) ~= tostring(ALLOWED_PLACE_ID) then
-	warn("[JoshHub] ❌ This script is not allowed in this game! Current PlaceId: " .. tostring(game.PlaceId))
+local function isAllowed()
+	local current = tostring(game.PlaceId)
+	return current == allowedId
+end
+
+if not isAllowed() then
+	warn("[JoshHub] ❌ Not allowed game! PlaceId: " .. tostring(game.PlaceId))
 	local player = game:GetService("Players").LocalPlayer
 	if player then
 		player:Kick("❌ This script only works in the official JoshHub game.")
@@ -13,7 +17,7 @@ if tostring(game.PlaceId) ~= tostring(ALLOWED_PLACE_ID) then
 	return
 end
 
-print("[JoshHub] ✅ Script loaded successfully for PlaceId: " .. tostring(game.PlaceId))
+print("[JoshHub] ✅ Correct game detected:", game.PlaceId) 
 
 --// Services
 local Players = game:GetService("Players")
