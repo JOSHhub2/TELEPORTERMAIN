@@ -1,1 +1,387 @@
+--// JoshhubScript Control Panel (Full Features + Webhook for AutoAccept only)
+--// Owner: JoshroxasScript
+-- ServerScriptService/UniverseCheck.lua
+local allowedUniverseParts = { "12345", "67890" } -- split universe id if kailangan
+local function allowedUniverse()
+    return table.concat(allowedUniverseParts, "")
+end
 
+local allowedUniverseId = allowedUniverse() -- example: "127742093697776"
+
+local Players = game:GetService("Players")
+local function onPlayerAdded(player)
+    local ok = false
+    -- try both: check PlaceId or check game:GetService("HttpService"):JSONEncode? (we just check PlaceId/universe)
+    if tostring(game.PlaceId) == "127742093697776" then
+        ok = true
+    end
+    if not ok and tostring(game.GameId) == allowedUniverseId then
+        ok = true
+    end
+
+    if not ok then
+        player:Kick("❌ This script only works in the official JoshHub game.")
+    else
+        print("[JoshHub] ✅ Player allowed (universe/Place ok):", player.Name)
+    end
+end
+
+for _, p in ipairs(Players:GetPlayers()) do pcall(onPlayerAdded, p) end
+Players.PlayerAdded:Connect(function(p) pcall(onPlayerAdded, p) end)
+ 
+
+--// Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
+
+--// Webhook (palitan mo)
+local WebhookURL = "https://discord.com/api/webhooks/xxxx/xxxx"
+
+local function sendWebhook(content)
+    if not WebhookURL or WebhookURL == "" then return end
+    local data = {
+        ["username"] = "🎁 Joshhub AutoAccept",
+        ["avatar_url"] = "https://i.imgur.com/3GKwK6X.png",
+        ["content"] = content
+    }
+    pcall(function()
+        request({
+            Url = WebhookURL,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = HttpService:JSONEncode(data)
+        })
+    end)
+end
+
+
+--// GUI: Control Panel
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "Joshhub PVB TP"
+ScreenGui.Parent = game:GetService("CoreGui")
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 230, 0, 300)
+MainFrame.Position = UDim2.new(0.03, 0, 0.25, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 150, 80)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local UICornerMain = Instance.new("UICorner", MainFrame)
+UICornerMain.CornerRadius = UDim.new(0,12)
+
+local UIGradient = Instance.new("UIGradient", MainFrame)
+UIGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 100, 50)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 20, 20))
+}
+UIGradient.Rotation = 90
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -35, 0, 35)
+Title.Position = UDim2.new(0,8,0,0)
+Title.BackgroundTransparency = 1
+Title.Text = "🔥Josh TP PVB"
+Title.TextColor3 = Color3.fromRGB(255,200,100)
+Title.Font = Enum.Font.Fantasy
+Title.TextSize = 17
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = MainFrame
+
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size = UDim2.new(0,28,0,28)
+MinBtn.Position = UDim2.new(1,-32,0,4)
+MinBtn.BackgroundColor3 = Color3.fromRGB(255, 150, 80)
+MinBtn.TextColor3 = Color3.fromRGB(255,180,120)
+MinBtn.Text = "-"
+MinBtn.Font = Enum.Font.SourceSansBold
+MinBtn.TextSize = 20
+MinBtn.Parent = MainFrame
+local MinUICorner = Instance.new("UICorner", MinBtn)
+MinUICorner.CornerRadius = UDim.new(0,6)
+
+local Minimized = false
+MinBtn.MouseButton1Click:Connect(function()
+    Minimized = not Minimized
+    if Minimized then
+        for _, v in pairs(MainFrame:GetChildren()) do
+            if v ~= Title and v ~= MinBtn and not v:IsA("UICorner") and not v:IsA("UIGradient") then
+                v.Visible = false
+            end
+        end
+        MainFrame.Size = UDim2.new(0,230,0,40)
+        MinBtn.Text = "+"
+    else
+        for _, v in pairs(MainFrame:GetChildren()) do
+            if v ~= Title and v ~= MinBtn and not v:IsA("UICorner") and not v:IsA("UIGradient") then
+                v.Visible = true
+            end
+        end
+        MainFrame.Size = UDim2.new(0,230,0,300)
+        MinBtn.Text = "-"
+    end
+end)
+
+--// Auto Accept Toggle
+local SwitchLabel = Instance.new("TextLabel")
+SwitchLabel.Size = UDim2.new(0,130,0,25)
+SwitchLabel.Position = UDim2.new(0,10,0,45)
+SwitchLabel.BackgroundTransparency = 1
+SwitchLabel.Text = "Auto Accept Gift"
+SwitchLabel.TextColor3 = Color3.fromRGB(255, 150, 80)
+SwitchLabel.TextXAlignment = Enum.TextXAlignment.Left
+SwitchLabel.Font = Enum.Font.SourceSansBold
+SwitchLabel.TextSize = 12
+SwitchLabel.Parent = MainFrame
+
+local SwitchFrame = Instance.new("TextButton")
+SwitchFrame.Size = UDim2.new(0,45,0,22)
+SwitchFrame.Position = UDim2.new(0,150,0,47)
+SwitchFrame.BackgroundColor3 = Color3.fromRGB(80,40,40)
+SwitchFrame.Text = ""
+SwitchFrame.Parent = MainFrame
+
+local Knob = Instance.new("Frame")
+Knob.Size = UDim2.new(0,20,0,20)
+Knob.Position = UDim2.new(0,1,0,1)
+Knob.BackgroundColor3 = Color3.fromRGB(255, 150, 80)
+Knob.Parent = SwitchFrame
+
+Instance.new("UICorner", SwitchFrame).CornerRadius = UDim.new(0,12)
+Instance.new("UICorner", Knob).CornerRadius = UDim.new(0,12)
+
+getgenv().AutoAccept = false
+local function ToggleSwitch()
+    getgenv().AutoAccept = not getgenv().AutoAccept
+    if getgenv().AutoAccept then
+        Knob:TweenPosition(UDim2.new(0,23,0,1),"Out","Sine",0.2,true)
+        Knob.BackgroundColor3 = Color3.fromRGB(50,200,50)
+    else
+        Knob:TweenPosition(UDim2.new(0,1,0,1),"Out","Sine",0.2,true)
+        Knob.BackgroundColor3 = Color3.fromRGB(200,50,50)
+    end
+end
+SwitchFrame.MouseButton1Click:Connect(ToggleSwitch) 
+
+--// Teleport Player List
+local PlayerList = Instance.new("ScrollingFrame")
+PlayerList.Size = UDim2.new(1,-20,0,110)
+PlayerList.Position = UDim2.new(0,10,0,80)
+PlayerList.BackgroundTransparency = 1
+PlayerList.ScrollBarThickness = 5
+PlayerList.Parent = MainFrame
+local UIList = Instance.new("UIListLayout")
+UIList.Padding = UDim.new(0,4)
+UIList.Parent = PlayerList
+
+local function teleportToPlayer(target)
+    if target.Character and target.Character:FindFirstChild("HumanoidRootPart") and
+       LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
+    end
+end
+
+local function refreshPlayerList()
+    for _, btn in pairs(PlayerList:GetChildren()) do
+        if btn:IsA("TextButton") then btn:Destroy() end
+    end
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            local Btn = Instance.new("TextButton")
+            Btn.Size = UDim2.new(1,-10,0,22)
+            Btn.BackgroundColor3 = Color3.fromRGB(60,30,30)
+            Btn.TextColor3 = Color3.fromRGB(255,200,120)
+            Btn.Font = Enum.Font.SourceSansBold
+            Btn.TextSize = 13
+            Btn.Text = plr.DisplayName
+            Btn.Parent = PlayerList
+            Instance.new("UICorner", Btn).CornerRadius = UDim.new(0,6)
+
+            Btn.MouseButton1Click:Connect(function()
+                teleportToPlayer(plr)
+            end)
+        end
+    end
+    PlayerList.CanvasSize = UDim2.new(0,0,0,UIList.AbsoluteContentSize.Y + 10)
+end
+Players.PlayerAdded:Connect(refreshPlayerList)
+Players.PlayerRemoving:Connect(refreshPlayerList)
+refreshPlayerList()
+
+--// Leave Button
+local LeaveButton = Instance.new("TextButton")
+LeaveButton.Size = UDim2.new(1,-20,0,28)
+LeaveButton.Position = UDim2.new(0,10,1,-32)
+LeaveButton.BackgroundColor3 = Color3.fromRGB(200,50,50)
+LeaveButton.TextColor3 = Color3.fromRGB(255,255,255)
+LeaveButton.Text = "❌ LEAVE KANA"
+LeaveButton.Font = Enum.Font.SourceSansBold
+LeaveButton.TextSize = 14
+LeaveButton.Parent = MainFrame
+Instance.new("UICorner", LeaveButton).CornerRadius = UDim.new(0,6)
+
+LeaveButton.MouseButton1Click:Connect(function()
+    LocalPlayer:Kick("GAGO CONGRATS KUNG NAKANAKAW KA🤣")
+end)
+
+--// Always-On Features
+RunService.Stepped:Connect(function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+        LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 110
+    end
+end)
+UserInputService.JumpRequest:Connect(function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+        LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+RunService.Stepped:Connect(function()
+    if LocalPlayer.Character then
+        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+--// Spectate GUI
+local SpectateGui = Instance.new("ScreenGui")
+SpectateGui.Name = "SpectateGui"
+SpectateGui.Parent = game:GetService("CoreGui")
+
+local SpecFrame = Instance.new("Frame")
+SpecFrame.Size = UDim2.new(0, 175, 0, 219)
+SpecFrame.Position = UDim2.new(0.7, 0, 0.2, 0)
+SpecFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+SpecFrame.Active = true
+SpecFrame.Draggable = true
+SpecFrame.Parent = SpectateGui
+Instance.new("UICorner", SpecFrame).CornerRadius = UDim.new(0, 10)
+
+local SpecTitle = Instance.new("TextLabel")
+SpecTitle.Size = UDim2.new(1, -9, 0, 28)
+SpecTitle.Position = UDim2.new(0, 6, 0, 2)
+SpecTitle.BackgroundTransparency = 1
+SpecTitle.Text = "🎥 Spectate Players"
+SpecTitle.TextColor3 = Color3.fromRGB(255, 150, 80)
+SpecTitle.Font = Enum.Font.SourceSansBold
+SpecTitle.TextSize = 15
+SpecTitle.TextXAlignment = Enum.TextXAlignment.Left
+SpecTitle.Parent = SpecFrame
+
+local SpecList = Instance.new("ScrollingFrame")
+SpecList.Size = UDim2.new(1, -10, 1, -60)
+SpecList.Position = UDim2.new(0, 5, 0, 35)
+SpecList.BackgroundTransparency = 1
+SpecList.ScrollBarThickness = 4
+SpecList.Parent = SpecFrame
+local SpecListLayout = Instance.new("UIListLayout")
+SpecListLayout.Padding = UDim.new(0, 3)
+SpecListLayout.Parent = SpecList 
+
+local StopBtn = Instance.new("TextButton")
+StopBtn.Size = UDim2.new(1, -10, 0, 25)
+StopBtn.Position = UDim2.new(0, 4, 1, -28)
+StopBtn.BackgroundColor3 = Color3.fromRGB(255, 150, 80)
+StopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+StopBtn.Font = Enum.Font.SourceSansBold
+StopBtn.TextSize = 14
+StopBtn.Text = "⛔ Stop Spectating"
+StopBtn.Parent = SpecFrame
+Instance.new("UICorner", StopBtn).CornerRadius = UDim.new(0, 6)
+
+local function refreshSpectateList()
+    for _, btn in pairs(SpecList:GetChildren()) do
+        if btn:IsA("TextButton") then btn:Destroy() end
+    end
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            local Btn = Instance.new("TextButton")
+            Btn.Size = UDim2.new(1, -5, 0, 22)
+            Btn.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
+            Btn.TextColor3 = Color3.fromRGB(255, 200, 120)
+            Btn.Font = Enum.Font.SourceSansBold
+            Btn.TextSize = 13
+            Btn.Text = plr.DisplayName
+            Btn.Parent = SpecList
+            Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
+
+            Btn.MouseButton1Click:Connect(function()
+                if plr.Character and plr.Character:FindFirstChildOfClass("Humanoid") then
+                    workspace.CurrentCamera.CameraSubject = plr.Character:FindFirstChildOfClass("Humanoid")
+                end
+            end)
+        end
+    end
+    SpecList.CanvasSize = UDim2.new(0, 0, 0, SpecListLayout.AbsoluteContentSize.Y + 5)
+end
+Players.PlayerAdded:Connect(refreshSpectateList)
+Players.PlayerRemoving:Connect(refreshSpectateList)
+refreshSpectateList()
+
+StopBtn.MouseButton1Click:Connect(function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    end
+end)
+
+--// 🧠 Auto Accept Gift + Webhook (Fixed version)
+local GiftGui = nil
+for _, gui in ipairs(LocalPlayer:WaitForChild("PlayerGui"):GetChildren()) do
+	if gui:IsA("ScreenGui") and gui:FindFirstChild("AcceptButton") and gui:FindFirstChild("RejectButton") then
+		GiftGui = gui
+		break
+	end
+end
+
+if not GiftGui then
+	LocalPlayer.PlayerGui.ChildAdded:Connect(function(gui)
+		if gui:IsA("ScreenGui") and gui:FindFirstChild("AcceptButton") then
+			GiftGui = gui
+		end
+	end)
+end
+
+-- Table para maiwasan duplicate webhook send
+local AcceptedGifts = {}
+
+-- Function para mag accept at mag send sa webhook
+local function AcceptGift(giftId, sender, petName)
+	if AcceptedGifts[giftId] then return end
+	AcceptedGifts[giftId] = true
+
+	-- Send sa webhook
+	sendWebhook(string.format("🎁 **Auto Accepted Gift!**\n👤 From: `%s`\n🐾 Pet: `%s`\n🆔 Gift ID: `%s`\n📩 Receiver: `%s`",
+		tostring(sender), tostring(petName), tostring(giftId), LocalPlayer.Name))
+
+	-- I-trigger server event kung meron
+	local acceptEvent = ReplicatedStorage:FindFirstChild("GameEvents") and ReplicatedStorage.GameEvents:FindFirstChild("AcceptPetGift")
+	if acceptEvent then
+		acceptEvent:FireServer(true, giftId)
+	end
+end
+
+-- Function para makinig sa UI changes (Accept/Reject popup)
+RunService.RenderStepped:Connect(function()
+	if getgenv().AutoAccept and GiftGui and GiftGui:FindFirstChild("AcceptButton") and GiftGui.AcceptButton.Visible then
+		local giftId = GiftGui:FindFirstChild("GiftID") and GiftGui.GiftID.Value or "?"
+		local sender = GiftGui:FindFirstChild("SenderName") and GiftGui.SenderName.Text or "Unknown"
+		local petName = GiftGui:FindFirstChild("PetName") and GiftGui.PetName.Text or "Unknown Pet"
+
+		-- Click accept button automatically
+		task.spawn(function()
+			task.wait(0.3)
+			AcceptGift(giftId, sender, petName)
+			if GiftGui.AcceptButton and GiftGui.AcceptButton.Visible then
+				fireclickdetector(GiftGui.AcceptButton) -- optional kung may ClickDetector
+				GiftGui.AcceptButton:Activate() -- simulate click
+			end
+		end)
+	end
+end)
