@@ -1,0 +1,201 @@
+-- Roblox LocalScript: Player List (Draggable + Auto Use Trading Ticket)
+-- Ilagay sa StarterPlayerScripts o StarterGui
+
+--// Services
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+--// Remote Events
+local GameEvents = ReplicatedStorage:WaitForChild("GameEvents")
+local TradeEvents = GameEvents:WaitForChild("TradeEvents")
+local SendRequest = TradeEvents:WaitForChild("SendRequest")
+
+--// CONFIG
+local WIDTH, HEIGHT = 180, 240
+local PADDING, BUTTON_HEIGHT = 8, 30
+
+--// Helper
+local function new(class, props)
+	local obj = Instance.new(class)
+	for k, v in pairs(props or {}) do obj[k] = v end
+	return obj
+end
+
+--// FUNCTION: Auto Use Trading Ticket
+local function useTradingTicket()
+	local backpack = LocalPlayer:FindFirstChild("Backpack")
+	if not backpack then return end
+
+	for _, item in ipairs(backpack:GetChildren()) do
+		if item.Name:lower():find("trading ticket") then
+			local remote = item:FindFirstChildWhichIsA("RemoteEvent", true)
+			if remote then
+				print("[AutoUse] Using:", item.Name)
+				remote:FireServer()
+				task.wait(0.1)
+			else
+				print("[AutoUse] No RemoteEvent found in:", item.Name)
+			end
+		end
+	end
+end
+
+--// UI Setup
+local screenGui = new("ScreenGui", {
+	Name = "PlayerListGui",
+	ResetOnSpawn = false,
+	Parent = LocalPlayer:WaitForChild("PlayerGui")
+})
+
+local window = new("Frame", {
+	Parent = screenGui,
+	Size = UDim2.new(0, WIDTH, 0, HEIGHT),
+	Position = UDim2.new(0.5, -WIDTH/2, 0, 20),
+	BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+	BorderSizePixel = 0,
+})
+new("UICorner", {Parent = window, CornerRadius = UDim.new(0, 8)})
+new("UIStroke", {Parent = window, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Thickness = 1, Transparency = 0.6})
+
+local titleBar = new("Frame", {Parent = window, Size = UDim2.new(1, 0, 0, 26), BackgroundTransparency = 1})
+new("TextLabel", {
+	Parent = titleBar,
+	AnchorPoint = Vector2.new(0, 0.5),
+	Position = UDim2.new(0, 8, 0.5, 0),
+	Size = UDim2.new(0.7, 0, 0.8, 0),
+	BackgroundTransparency = 1,
+	Text = "Players",
+	TextXAlignment = Enum.TextXAlignment.Left,
+	Font = Enum.Font.GothamSemibold,
+	TextSize = 14,
+	TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+
+local toggleBtn = new("TextButton", {
+	Parent = titleBar,
+	AnchorPoint = Vector2.new(1, 0.5),
+	Position = UDim2.new(1, -6, 0.5, 0),
+	Size = UDim2.new(0, 26, 0, 18),
+	BackgroundTransparency = 0.2,
+	Text = "—",
+	Font = Enum.Font.GothamBold,
+	TextSize = 16,
+	TextColor3 = Color3.fromRGB(255, 255, 255)
+})
+local minimized = false
+
+local scroll = new("ScrollingFrame", {
+	Parent = window,
+	Size = UDim2.new(1, -PADDING*2, 1, -26 - PADDING*2),
+	Position = UDim2.new(0, PADDING, 0, 26 + PADDING),
+	BackgroundTransparency = 1,
+	ScrollBarThickness = 6,
+	CanvasSize = UDim2.new(0, 0, 0, 0)
+})
+local listLayout = new("UIListLayout", {Parent = scroll, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder})
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	scroll.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + PADDING)
+end)
+
+local template = new("TextButton", {
+	Name = "PlayerTemplate",
+	Parent = scroll,
+	Size = UDim2.new(1, 0, 0, BUTTON_HEIGHT),
+	BackgroundTransparency = 0.15,
+	BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+	TextColor3 = Color3.fromRGB(255, 255, 255),
+	Font = Enum.Font.Gotham,
+	TextSize = 13,
+	Visible = false,
+	AutoButtonColor = true
+})
+new("UICorner", {Parent = template, CornerRadius = UDim.new(0, 5)})
+
+local buttons = {}
+
+--// When Player Button is Clicked
+local function onPlayerClick(targetPlayer)
+	if not targetPlayer or not targetPlayer:IsA("Player") then return end
+
+	print("[Trade] Sending request to:", targetPlayer.Name)
+	SendRequest:FireServer(targetPlayer)
+	useTradingTicket()
+end
+
+--// Create Button for Player
+local function createPlayerButton(player)
+	local btn = template:Clone()
+	btn.Name = "PlayerBtn_" .. player.UserId
+	btn.Visible = true
+	btn.Parent = scroll
+	btn.Text = player.Name
+
+	btn.MouseButton1Click:Connect(function()
+		onPlayerClick(player)
+	end)
+
+	return btn
+end
+
+--// Rebuild Player List
+local function rebuildList()
+	for userId, btn in pairs(buttons) do
+		if not Players:GetPlayerByUserId(userId) then
+			btn:Destroy()
+			buttons[userId] = nil
+		end
+	end
+	for _, pl in pairs(Players:GetPlayers()) do
+		if pl ~= LocalPlayer then
+			if not buttons[pl.UserId] then
+				buttons[pl.UserId] = createPlayerButton(pl)
+			else
+				buttons[pl.UserId].Text = pl.Name
+			end
+		end
+	end
+end
+
+rebuildList()
+Players.PlayerAdded:Connect(rebuildList)
+Players.PlayerRemoving:Connect(rebuildList)
+
+toggleBtn.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	scroll.Visible = not minimized
+	window.Size = minimized and UDim2.new(0, WIDTH, 0, 26) or UDim2.new(0, WIDTH, 0, HEIGHT)
+	toggleBtn.Text = minimized and "+" or "—"
+end)
+
+--// Draggable
+local dragging, dragInput, dragStart, startPos = false
+local function update(input)
+	if dragging then
+		local delta = input.Position - dragStart
+		window.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end
+
+titleBar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = window.Position
+		dragInput = input
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
+
+print("[✅] Player List GUI Loaded: Click player = Send Trade + Auto Use Trading Ticket")
